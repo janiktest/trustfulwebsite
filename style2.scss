@@ -1,0 +1,157 @@
+* {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+  min-height: 500px;
+}
+/* GLOBAL */
+h1,
+h2 {
+  text-transform: uppercase;
+  font-weight: 300;
+}
+h1 {
+  font-size: 4rem;
+  letter-spacing: 0.75rem;
+}
+h2 {
+  font-size: 3rem;
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  padding-top: 50px;
+}
+
+/* NAVBAR */
+.navbar {
+  padding: 0 !important;
+}
+
+.nav-link {
+  color: #333;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.2rem;
+}
+
+/* WELCOME SECTION */
+.welcome-section {
+  background: linear-gradient(
+    210deg,
+    rgba(38, 38, 38, 1) 0%,
+    rgba(105, 113, 126, 1) 100%
+  );
+
+  &__text-box {
+    &--sub {
+      font-size: 2rem;
+      font-weight: 300;
+    }
+  }
+}
+
+/* PROJECTS SECTION */
+.projects-section {
+  justify-content: center;
+
+  @media (max-width: 992px) {
+    padding-top: 100px;
+    height: auto;
+  }
+
+  .section-heading {
+    color: #333;
+
+    &::after {
+      display: block;
+      content: ' ';
+      width: 200px;
+      height: 2px;
+      margin: 0 auto;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      background-color: #0056b3;
+    }
+  }
+}
+
+.grid {
+  margin-bottom: 50px;
+  max-width: 1280px;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.card {
+  min-width: 300px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 992px) {
+    margin-bottom: 50px;
+  }
+}
+
+/* CONTACT */
+.contact-section {
+  background: linear-gradient(
+    30deg,
+    rgba(38, 38, 38, 1) 0%,
+    rgba(105, 113, 126, 1) 100%
+  );
+
+  .section-heading {
+    color: #eee;
+
+    &::after {
+      background-color: #0056b3;
+      box-shadow: 2px 2px 1px #1f1f1f;
+    }
+  }
+  .contact-options {
+    width: 600px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    list-style: none;
+
+    &__link {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      color: #eee;
+      text-decoration: none;
+      text-shadow: 2px 2px 1px #1f1f1f;
+      text-decoration: none;
+      transition: transform 0.3s ease-out;
+
+      &:hover {
+        color: #eee;
+        transform: translateY(8px);
+      }
+    }
+
+    &__icon {
+      font-size: 2rem;
+      margin-right: 5px;
+    }
+  }
+}
