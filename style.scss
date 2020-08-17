@@ -8,10 +8,6 @@ html {
   font-size: 62.5%; // 1rem = 10px
   box-sizing: border-box;
   scroll-behavior: smooth;
-
-  @media (max-width: 800px) {
-    font-size: 50%; // 1rem = 8px
-  }
 }
 
 body {
@@ -28,13 +24,21 @@ h1 {
   font-size: 6.5rem;
   letter-spacing: 1.2rem;
 
-  @media (max-width: 400px) {
+  @media (max-width: 600px) {
     font-size: 5rem;
-    letter-spacing: 0.7rem;
+  }
+
+  @media (max-width: 400px) {
+    font-size: 3.5rem;
+    letter-spacing: 0.4rem;
   }
 }
 h2 {
   font-size: 4.5rem;
+
+  @media (max-width: 600px) {
+    font-size: 3.5rem;
+  }
 }
 
 .btn {
@@ -77,6 +81,11 @@ h2 {
   padding: 1.2rem 2.4rem;
   border-bottom: 3px solid transparent;
 
+  @media (max-width: 600px) {
+    font-size: 1.8rem;
+    padding: 1.2rem 1rem;
+  }
+
   &:hover {
     color: var(--blue);
     border-bottom: 3px solid var(--blue);
@@ -95,6 +104,10 @@ h2 {
     &--sub {
       font-size: 3.2rem;
       font-weight: 300;
+
+      @media (max-width: 400px) {
+        font-size: 2.5rem;
+      }
     }
   }
 }
@@ -115,7 +128,7 @@ h2 {
 
 .grid {
   margin-bottom: 5rem;
-  max-width: 128rem;
+ 
   width: 100%;
   display: flex;
   justify-content: space-evenly;
@@ -127,22 +140,79 @@ h2 {
 }
 
 .card {
-  font-size: 1.6rem;
-  min-width: 30rem;
+  font-size: 1.8rem;
+  width: 28%;
+  max-width: 40rem;
   background-color: rgb(247, 247, 247);
   box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.15);
 
-  &-image {
-    height: 23rem;
+  /* Change width of the card so that it looks good across all widths */
+  @media (max-width: 992px) {
+    width: 45%;
+
+    /* I'm using one more class to increase specificity and overwrite bootstrap */
+    &.project-tile {
+      margin-bottom: 5rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 70%;
+  }
+
+  @media (max-width: 400px) {
+    width: 85%;
+  }
+
+  &-header {
+    font-size: 2.5rem;
+  }
+
+  &-img {
+    border-bottom: 1px solid var(--blue);
+  }
+
+  &-body {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   &-title {
     font-size: 2rem;
+    border-bottom: 1px solid var(--blue);
   }
-  @media (max-width: 992px) {
-    margin-bottom: 5rem;
+
+  .technologies {
+    padding: 0;
+    margin-bottom: 1.5rem;
+
+    .technology {
+      &__item {
+        display: grid;
+        grid-template-columns: 3rem 1fr;
+        align-items: center;
+        
+        &:not(:last-child) {
+          margin-bottom: 1.3rem;
+        }
+      }
+      
+      &__icon {
+        color: var(--blue);
+        font-size: 2.5rem;
+        justify-self: center;
+      }
+    }
+  }
+
+  &-btn {
+    justify-self: flex-end;
   }
 }
+
+
 
 /* CONTACT */
 .contact-section {

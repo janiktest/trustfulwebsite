@@ -11,12 +11,6 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (max-width: 800px) {
-  html {
-    font-size: 50%;
-  }
-}
-
 body {
   font-family: 'Lato', sans-serif;
   min-height: 50rem;
@@ -34,15 +28,27 @@ h1 {
   letter-spacing: 1.2rem;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
   h1 {
     font-size: 5rem;
-    letter-spacing: 0.7rem;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 3.5rem;
+    letter-spacing: 0.4rem;
   }
 }
 
 h2 {
   font-size: 4.5rem;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 3.5rem;
+  }
 }
 
 .btn {
@@ -95,6 +101,13 @@ h2 {
   border-bottom: 3px solid transparent;
 }
 
+@media (max-width: 600px) {
+  .nav-link {
+    font-size: 1.8rem;
+    padding: 1.2rem 1rem;
+  }
+}
+
 .nav-link:hover {
   color: var(--blue);
   border-bottom: 3px solid var(--blue);
@@ -108,6 +121,12 @@ h2 {
 .welcome-section__text-box--sub {
   font-size: 3.2rem;
   font-weight: 300;
+}
+
+@media (max-width: 400px) {
+  .welcome-section__text-box--sub {
+    font-size: 2.5rem;
+  }
 }
 
 /* PROJECTS SECTION */
@@ -130,7 +149,6 @@ h2 {
 
 .grid {
   margin-bottom: 5rem;
-  max-width: 128rem;
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -153,25 +171,92 @@ h2 {
 }
 
 .card {
-  font-size: 1.6rem;
-  min-width: 30rem;
+  font-size: 1.8rem;
+  width: 28%;
+  max-width: 40rem;
   background-color: #f7f7f7;
   -webkit-box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.15);
           box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.15);
-}
-
-.card-image {
-  height: 23rem;
-}
-
-.card-title {
-  font-size: 2rem;
+  /* Change width of the card so that it looks good across all widths */
 }
 
 @media (max-width: 992px) {
   .card {
+    width: 45%;
+    /* I'm using one more class to increase specificity and overwrite bootstrap */
+  }
+  .card.project-tile {
     margin-bottom: 5rem;
   }
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: 70%;
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    width: 85%;
+  }
+}
+
+.card-header {
+  font-size: 2.5rem;
+}
+
+.card-img {
+  border-bottom: 1px solid var(--blue);
+}
+
+.card-body {
+  padding: 2.5rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.card-title {
+  font-size: 2rem;
+  border-bottom: 1px solid var(--blue);
+}
+
+.card .technologies {
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.card .technologies .technology__item {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 3rem 1fr;
+      grid-template-columns: 3rem 1fr;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.card .technologies .technology__item:not(:last-child) {
+  margin-bottom: 1.3rem;
+}
+
+.card .technologies .technology__icon {
+  color: var(--blue);
+  font-size: 2.5rem;
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.card-btn {
+  justify-self: flex-end;
 }
 
 /* CONTACT */
