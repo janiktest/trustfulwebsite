@@ -4,15 +4,22 @@
 }
 
 html {
+  min-width: 260px;
+  font-size: 62.5%;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   scroll-behavior: smooth;
 }
 
+@media (max-width: 800px) {
+  html {
+    font-size: 50%;
+  }
+}
+
 body {
-  font-size: 16px;
   font-family: 'Lato', sans-serif;
-  min-height: 500px;
+  min-height: 50rem;
 }
 
 /* GLOBAL */
@@ -23,12 +30,23 @@ h2 {
 }
 
 h1 {
-  font-size: 4rem;
-  letter-spacing: 0.75rem;
+  font-size: 6.5rem;
+  letter-spacing: 1.2rem;
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 5rem;
+    letter-spacing: 0.7rem;
+  }
 }
 
 h2 {
-  font-size: 3rem;
+  font-size: 4.5rem;
+}
+
+.btn {
+  font-size: 1.7rem;
 }
 
 .section {
@@ -47,7 +65,22 @@ h2 {
       -ms-flex-align: center;
           align-items: center;
   overflow-y: auto;
-  padding-top: 50px;
+  padding-top: 5rem;
+}
+
+.section-heading {
+  text-align: center;
+}
+
+.section-heading::after {
+  display: block;
+  content: ' ';
+  width: 20rem;
+  height: 2px;
+  margin: 0 auto;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  background-color: var(--blue);
 }
 
 /* NAVBAR */
@@ -56,9 +89,15 @@ h2 {
 }
 
 .nav-link {
+  font-size: 2rem;
   color: #333;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.2rem;
+  padding: 1.2rem 2.4rem;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--blue);
+  border-bottom: 3px solid var(--blue);
 }
 
 /* WELCOME SECTION */
@@ -67,7 +106,7 @@ h2 {
 }
 
 .welcome-section__text-box--sub {
-  font-size: 2rem;
+  font-size: 3.2rem;
   font-weight: 300;
 }
 
@@ -80,7 +119,7 @@ h2 {
 
 @media (max-width: 992px) {
   .projects-section {
-    padding-top: 100px;
+    padding-top: 10rem;
     height: auto;
   }
 }
@@ -89,20 +128,9 @@ h2 {
   color: #333;
 }
 
-.projects-section .section-heading::after {
-  display: block;
-  content: ' ';
-  width: 200px;
-  height: 2px;
-  margin: 0 auto;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  background-color: #0056b3;
-}
-
 .grid {
-  margin-bottom: 50px;
-  max-width: 1280px;
+  margin-bottom: 5rem;
+  max-width: 128rem;
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -125,14 +153,24 @@ h2 {
 }
 
 .card {
-  min-width: 300px;
-  -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  font-size: 1.6rem;
+  min-width: 30rem;
+  background-color: #f7f7f7;
+  -webkit-box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.15);
+          box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.15);
+}
+
+.card-image {
+  height: 23rem;
+}
+
+.card-title {
+  font-size: 2rem;
 }
 
 @media (max-width: 992px) {
   .card {
-    margin-bottom: 50px;
+    margin-bottom: 5rem;
   }
 }
 
@@ -145,14 +183,8 @@ h2 {
   color: #eee;
 }
 
-.contact-section .section-heading::after {
-  background-color: #0056b3;
-  -webkit-box-shadow: 2px 2px 1px #1f1f1f;
-          box-shadow: 2px 2px 1px #1f1f1f;
-}
-
 .contact-section .contact-options {
-  width: 600px;
+  max-width: 60rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -163,16 +195,37 @@ h2 {
   list-style: none;
 }
 
-.contact-section .contact-options__link {
+@media (max-width: 600px) {
+  .contact-section .contact-options {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+}
+
+.contact-section .contact-option:not(:last-child) {
+  margin-right: 2.5rem;
+}
+
+@media (max-width: 600px) {
+  .contact-section .contact-option:not(:last-child) {
+    margin-bottom: 2.5rem;
+  }
+}
+
+.contact-section .contact-option__link {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  font-size: 1.5rem;
+  font-size: 2.4rem;
   color: #eee;
-  text-decoration: none;
   text-shadow: 2px 2px 1px #1f1f1f;
   text-decoration: none;
   -webkit-transition: -webkit-transform 0.3s ease-out;
@@ -181,14 +234,14 @@ h2 {
   transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
 }
 
-.contact-section .contact-options__link:hover {
+.contact-section .contact-option__link:hover {
   color: #eee;
-  -webkit-transform: translateY(8px);
-          transform: translateY(8px);
+  -webkit-transform: translateY(0.8rem);
+          transform: translateY(0.8rem);
 }
 
-.contact-section .contact-options__icon {
-  font-size: 2rem;
-  margin-right: 5px;
+.contact-section .contact-option__icon {
+  font-size: 3.2rem;
+  margin-right: 0.5rem;
 }
-/*# sourceMappingURL=style2.css.map */
+/*# sourceMappingURL=style.css.map */
