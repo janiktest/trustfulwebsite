@@ -18,11 +18,18 @@
   };
 
   const DEFAULTS = {
-    interval: 15, cards: 1, mode: 'random', newPerDay: 20,
+    interval: 5, cards: 1, mode: 'srs', newPerDay: 20,
+    cardScale: 100, imgMax: 50, hideTitle: false, autoHideNav: false,
     penHalve: true, penExtra: false, penRepeat: true,
     useShortcut: false, shortcutName: 'Anki Fertig', skipEnabled: true, skipOnceEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
+  // Einmalige Umstellung auf die neuen Standardwerte (Spaced Repetition, 5 Minuten)
+  if (LS.get('settingsRev', 1) < 2) {
+    Object.assign(settings, { mode: 'srs', interval: 5, newPerDay: 20 });
+    LS.set('settings', settings);
+    LS.set('settingsRev', 2);
+  }
   const saveSettings = () => LS.set('settings', settings);
 
   // ---------- IndexedDB ----------
@@ -303,8 +310,10 @@
 
   const CARD_CSS_OVERRIDES = `
     :host { display:block; }
-    .card { padding: 20px 16px; min-height: 240px; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
-    img { max-width: 100% !important; height: auto; }
+    .card { padding: 20px 16px; min-height: 120px; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
+    img { max-width: 100% !important; max-height: var(--img-max, 50vh); width: auto; height: auto; object-fit: contain; }
+    #io-wrapper { display: inline-block; width: auto !important; max-width: 100%; vertical-align: top; }
+    #io-overlay img { width: 100% !important; max-height: none !important; }
     .cloze { font-weight: bold; color: #1a5fd6; }
     hr#answer { border: 0; border-top: 1px solid #ddd; margin: 16px 0; }
     #io-original { visibility: visible !important; }
@@ -661,6 +670,7 @@
     document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.view === name));
     document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     LS.set('view', name);
+    if (settings.autoHideNav) setNav(false);
     if (name === 'learn') showLearn();
     if (name === 'decks') renderDecks();
     if (name === 'settings') renderSkipped();
@@ -681,6 +691,14 @@
     num('set-interval', 'interval', 1, 600);
     num('set-cards', 'cards', 1, 20);
     num('set-newperday', 'newPerDay', 0, 500);
+    const range = (id, key, out, fmt) => {
+      const el = $(id); el.value = settings[key]; $(out).textContent = fmt(settings[key]);
+      el.addEventListener('input', () => { settings[key] = Number(el.value); $(out).textContent = fmt(settings[key]); saveSettings(); applyDisplay(); });
+    };
+    range('set-cardscale', 'cardScale', 'out-cardscale', (v) => v + ' %');
+    range('set-imgmax', 'imgMax', 'out-imgmax', (v) => v + ' % der Bildschirmhöhe');
+    const disp = (id, key) => { const el = $(id); el.checked = settings[key]; el.addEventListener('change', () => { settings[key] = el.checked; saveSettings(); applyDisplay(); }); };
+    disp('set-hidetitle', 'hideTitle'); disp('set-autohidenav', 'autoHideNav');
     const mode = $('set-mode'); mode.value = settings.mode;
     const syncSrs = () => document.querySelectorAll('.srs-only').forEach((e) => e.classList.toggle('hidden', settings.mode !== 'srs'));
     mode.addEventListener('change', () => { settings.mode = mode.value; saveSettings(); syncSrs(); });
@@ -699,6 +717,31 @@
       const d = await db(); const tx = d.transaction('sched', 'readwrite'); tx.objectStore('sched').clear(); await txDone(tx);
       LS.set('newCount', {}); LS.set('recent', []); toast('Lernfortschritt zurückgesetzt');
     });
+  }
+
+  function applyDisplay() {
+    const scale = settings.cardScale / 100;
+    document.documentElement.style.setProperty('--card-scale', scale);
+    document.documentElement.style.setProperty('--img-max', (settings.imgMax / scale).toFixed(1) + 'vh');
+    document.body.classList.toggle('hide-title', settings.hideTitle);
+    document.body.classList.toggle('autohide', settings.autoHideNav);
+    setNav(!settings.autoHideNav);
+  }
+  let navShown = true;
+  function setNav(show) {
+    navShown = show;
+    document.body.classList.toggle('nav-hidden', settings.autoHideNav && !show);
+  }
+  function initNavGestures() {
+    let startY = null;
+    document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+    document.addEventListener('touchmove', (e) => {
+      if (!settings.autoHideNav || startY == null) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 50 && window.scrollY <= 0 && !navShown) { setNav(true); startY = null; }
+      else if (dy < -40 && navShown) { setNav(false); startY = null; }
+    }, { passive: true });
+    $('nav-handle').addEventListener('click', () => setNav(true));
   }
 
   function initSetup() {
@@ -745,6 +788,8 @@
   }
 
   async function init() {
+    applyDisplay();
+    initNavGestures();
     initSetup();
     document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => showView(t.dataset.view)));
     document.addEventListener('click', (e) => {
