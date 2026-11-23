@@ -326,7 +326,27 @@ h2 {
 }
 
 .contact-section .contact-option__icon {
-  font-size: 3.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  fill: currentColor;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
   margin-right: 0.5rem;
+}
+
+/* FOOTER */
+.site-footer {
+  background: #262626;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.site-footer a {
+  color: #ccc;
+}
+
+.site-footer a:hover {
+  color: #fff;
 }
 /*# sourceMappingURL=style.css.map */
