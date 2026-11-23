@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>Anki Lock</title>
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
   <header class="topbar">
@@ -133,7 +133,7 @@
         <h2>Lernstand</h2>
         <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
-        <p class="muted version">Version 6 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 7 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
       </div>
     </section>
 
@@ -141,7 +141,7 @@
     <section id="view-setup" class="view">
       <div class="panel">
         <h2>Worum geht's?</h2>
-        <p>Damit diese Seite automatisch aufgeht, wenn du z. B. Instagram öffnest, nutzt du die iPhone-App <b>Kurzbefehle</b>. Du richtest einmal drei Dinge ein, das dauert etwa 5 Minuten.</p>
+        <p>Damit diese Seite automatisch aufgeht, wenn du z. B. Instagram öffnest, nutzt du die iPhone-App <b>Kurzbefehle</b>. Du installierst zwei Kurzbefehle per Tipp und legst eine Automation an. Das dauert etwa 3 Minuten.</p>
         <div class="flow">
           <div class="flow-step"><span class="flow-icon">📱</span>Du öffnest Instagram</div>
           <div class="flow-arrow">↓</div>
@@ -156,7 +156,13 @@
 
       <details class="panel step" data-step="1">
         <summary><span class="step-num">1</span><span class="step-title">Kurzbefehl „Anki Fertig“<small>merkt sich, bis wann du frei bist</small></span><span class="step-check">✓</span></summary>
-        <ol class="howto">
+        <div class="install-box">
+          <a class="btn primary wide" href="https://www.icloud.com/shortcuts/7a70a601e71543b9a5159ec3ad2b9350" target="_blank" rel="noopener">„Anki Fertig“ installieren</a>
+          <p class="muted">Öffnet die Kurzbefehle-App. Dort auf <b>Kurzbefehl hinzufügen</b> <span class="en-inline">(Add Shortcut)</span> tippen, fertig.</p>
+        </div>
+        <details class="diy">
+          <summary>Lieber selbst bauen? Anleitung anzeigen</summary>
+          <ol class="howto">
           <li>Öffne die App <b>Kurzbefehle</b> und tippe unten auf <b>Kurzbefehle</b>, dann oben rechts auf <b>+</b>.</li>
           <li>Tippe oben auf den Namen und nenne ihn genau <code>Anki Fertig</code> <button class="copy" data-copy="Anki Fertig">kopieren</button></li>
           <li>Tippe unten in die Suche, gib <b>Datei sichern</b> <span class="en-inline">(Save File)</span> ein und tippe die Aktion an. So soll sie aussehen:
@@ -175,6 +181,7 @@
           </li>
           <li>Oben auf <b>Fertig</b> tippen.</li>
         </ol>
+        </details>
         <div class="test-box">
           <b>Testen:</b> Tippe auf den Button. Die Kurzbefehle-App geht kurz auf. Wenn iOS fragt, ob der Kurzbefehl Dateien sichern darf, wähle <b>Immer erlauben</b>.
           <button class="btn primary wide" id="setup-test-1">„Anki Fertig“ jetzt testen</button>
@@ -185,7 +192,13 @@
 
       <details class="panel step" data-step="2">
         <summary><span class="step-num">2</span><span class="step-title">Kurzbefehl „Anki Sperre“<small>prüft, ob du gerade frei bist</small></span><span class="step-check">✓</span></summary>
-        <ol class="howto">
+        <div class="install-box">
+          <a class="btn primary wide" href="https://www.icloud.com/shortcuts/dc41176c6c1c47d4bdf22dd015cc9be7" target="_blank" rel="noopener">„Anki Sperre“ installieren</a>
+          <p class="muted">Öffnet die Kurzbefehle-App. Dort auf <b>Kurzbefehl hinzufügen</b> <span class="en-inline">(Add Shortcut)</span> tippen, fertig.</p>
+        </div>
+        <details class="diy">
+          <summary>Lieber selbst bauen? Anleitung anzeigen</summary>
+          <ol class="howto">
           <li>Wieder in <b>Kurzbefehle</b> auf <b>+</b> tippen und ihn <code>Anki Sperre</code> nennen. <button class="copy" data-copy="Anki Sperre">kopieren</button></li>
           <li>Füge nacheinander diese vier Aktionen hinzu (jeweils über die Suche unten). Am Ende soll es so aussehen:
             <div class="sc">
@@ -202,6 +215,7 @@
           <li><b>Aktion 4:</b> Suche nach <b>URL öffnen</b> <span class="en-inline">(Open URLs)</span> und ziehe die Aktion <i>zwischen</i> „Wenn“ und „Sonst“. Als URL diese Adresse einfügen: <button class="copy js-copy-url">Adresse kopieren</button></li>
           <li>Den „Sonst“-Teil lässt du einfach leer. Oben auf <b>Fertig</b> tippen.</li>
         </ol>
+        </details>
         <div class="test-box">
           <b>Testen:</b> Tippe auf „Sperre aktivieren“, dann führe „Anki Sperre“ in der Kurzbefehle-App einmal von Hand aus. Diese Seite sollte sich öffnen.
           <button class="btn secondary wide js-lock-now">Sperre aktivieren</button>
@@ -250,6 +264,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
