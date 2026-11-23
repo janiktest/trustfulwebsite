@@ -214,3 +214,11 @@ main { max-width: 680px; margin: 0 auto; padding: 16px; }
 .en-flag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin-right: 2px; vertical-align: 1px; }
 .sc-en .tok { font-size: 12.5px; }
 .en-inline { color: var(--muted); font-size: .92em; }
+
+/* Installieren */
+.install-box { margin: 4px 0 12px; }
+.install-box .btn { text-decoration: none; }
+.install-box p { font-size: 14px; margin: 8px 2px 0; }
+.diy { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; }
+.step .diy summary { display: list-item; padding: 0; cursor: pointer; color: var(--accent); font-weight: 600; font-size: 15px; }
+.diy[open] summary { margin-bottom: 4px; }
