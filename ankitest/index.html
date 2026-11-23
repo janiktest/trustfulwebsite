@@ -54,6 +54,10 @@
             <button class="btn good" data-grade="3">Gut<small id="lbl-3"></small></button>
             <button class="btn easy" data-grade="4">Einfach<small id="lbl-4"></small></button>
           </div>
+          <div id="skip-bar" class="skip-bar">
+            <button id="btn-skip-once" class="btn ghost skip">Überspringen</button>
+            <button id="btn-skip" class="btn ghost skip">Noch nicht gehabt</button>
+          </div>
         </div>
       </div>
     </section>
@@ -101,6 +105,13 @@
           <span>Neue Karten pro Tag</span>
           <input type="number" id="set-newperday" min="0" max="500" inputmode="numeric">
         </label>
+      </div>
+      <div class="panel form">
+        <h2>Überspringen</h2>
+        <label class="check"><input type="checkbox" id="set-skip-once"> Button „Überspringen“ anzeigen (Karte kommt später wieder)</label>
+        <label class="check"><input type="checkbox" id="set-skip"> Button „Noch nicht gehabt“ anzeigen</label>
+        <p class="muted">Karten, die du mit „Noch nicht gehabt“ überspringst, kommen nicht mehr dran, bis du sie hier zurückholst.</p>
+        <div id="skipped-list" class="skipped-list"></div>
       </div>
       <div class="panel form">
         <h2>Strafe bei falscher Antwort</h2>
