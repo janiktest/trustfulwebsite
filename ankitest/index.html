@@ -7,9 +7,10 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>Anki Lock</title>
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
+  <div id="nav-handle" class="nav-handle" aria-label="Menü anzeigen"></div>
   <header class="topbar">
     <h1>Anki Lock</h1>
     <nav class="tabs" role="tablist">
@@ -108,6 +109,20 @@
         </label>
       </div>
       <div class="panel form">
+        <h2>Anzeige</h2>
+        <label class="row stack">
+          <span>Kartengröße <output id="out-cardscale"></output></span>
+          <input type="range" id="set-cardscale" min="50" max="160" step="5">
+        </label>
+        <label class="row stack">
+          <span>Bilder höchstens <output id="out-imgmax"></output></span>
+          <input type="range" id="set-imgmax" min="20" max="90" step="5">
+        </label>
+        <p class="muted">Tipp: So einstellen, dass Karte und Buttons ohne Scrollen auf den Bildschirm passen. Unter „Lernen“ siehst du die Änderung sofort.</p>
+        <label class="check"><input type="checkbox" id="set-hidetitle"> Titel „Anki Lock“ ausblenden</label>
+        <label class="check"><input type="checkbox" id="set-autohidenav"> Menüleiste ausblenden (zum Anzeigen oben nach unten wischen)</label>
+      </div>
+      <div class="panel form">
         <h2>Überspringen</h2>
         <label class="check"><input type="checkbox" id="set-skip-once"> Button „Überspringen“ anzeigen (Karte kommt später wieder)</label>
         <label class="check"><input type="checkbox" id="set-skip"> Button „Noch nicht gehabt“ anzeigen</label>
@@ -133,7 +148,7 @@
         <h2>Lernstand</h2>
         <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
-        <p class="muted version">Version 8 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 9 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
       </div>
     </section>
 
@@ -264,6 +279,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>
