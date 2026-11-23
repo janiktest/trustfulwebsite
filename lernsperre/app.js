@@ -21,7 +21,7 @@
     interval: 5, cards: 1, mode: 'srs', newPerDay: 20,
     cardScale: 100, imgMax: 50, hideTitle: false, autoHideNav: false,
     penHalve: true, penExtra: false, penRepeat: true,
-    appMode: 'lock', appModeChosen: false, useShortcut: false, shortcutName: 'LernSperre LOCK', skipEnabled: true, skipOnceEnabled: true,
+    appMode: 'lock', appModeChosen: false, useShortcut: false, shortcutName: 'LernSperre UNLOCK', skipEnabled: true, skipOnceEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   // Einmalige Umstellung auf die neuen Standardwerte (Spaced Repetition, 5 Minuten)
@@ -36,9 +36,9 @@
     LS.set('settings', settings);
     LS.set('settingsRev', 3);
   }
-  // Kurzbefehle heißen jetzt „LernSperre LOCK“ (nach dem Lernen) und „LernSperre UNLOCK“ (Prüfen)
+  // Kurzbefehle heißen jetzt „LernSperre UNLOCK“ (nach dem Lernen) und „LernSperre LOCK“ (Prüfen)
   if (LS.get('settingsRev', 3) < 4) {
-    if (['Anki Fertig', 'LernSperre Fertig'].includes(settings.shortcutName)) settings.shortcutName = 'LernSperre LOCK';
+    if (['Anki Fertig', 'LernSperre Fertig'].includes(settings.shortcutName)) settings.shortcutName = 'LernSperre UNLOCK';
     LS.set('settings', settings);
     LS.set('settingsRev', 4);
   }
@@ -817,8 +817,8 @@
 
   const SHORTCUT_LINKS = {
     // Neue iCloud-Links für die umbenannten Kurzbefehle hier eintragen (null = Selbstbau-Anleitung zeigen)
-    fertig: 'https://www.icloud.com/shortcuts/3b976990f0be43fe8fd3288500d8bf36', // „LernSperre LOCK“
-    sperre: 'https://www.icloud.com/shortcuts/0a2285c888ce40c49a169575b157a958', // „LernSperre UNLOCK“
+    fertig: 'https://www.icloud.com/shortcuts/0a2285c888ce40c49a169575b157a958', // „LernSperre UNLOCK“
+    sperre: 'https://www.icloud.com/shortcuts/3b976990f0be43fe8fd3288500d8bf36', // „LernSperre LOCK“
   };
 
   async function doImport(file, st) {
@@ -885,7 +885,7 @@
       if (await doImport(file, $('ob-import-status'))) renderOnboarding();
       e.target.value = '';
     });
-    // Wer „LernSperre LOCK“ installiert, will es nach dem Lernen auch automatisch starten
+    // Wer „LernSperre UNLOCK“ installiert, will es nach dem Lernen auch automatisch starten
     document.querySelectorAll('#onboarding [data-install="fertig"]').forEach((a) => a.addEventListener('click', () => {
       settings.useShortcut = true; saveSettings(); $('set-useshortcut').checked = true;
       document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = true; });
