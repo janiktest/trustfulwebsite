@@ -504,7 +504,7 @@
   function updateProgress() {
     $('progress-text').textContent = `Karte ${Math.min(session.done + 1, session.required)} von ${session.required}`;
     const p = [];
-    if (session.wrong) p.push(`${session.wrong} falsch`);
+    if (session.wrong) p.push(`${session.wrong} nicht gewusst`);
     if (session.factor < 1) p.push(`Zeit ×${session.factor}`);
     $('penalty-text').textContent = p.join(' · ');
     $('penalty-text').classList.toggle('hidden', !p.length);
@@ -558,7 +558,7 @@
     if (!wasVoluntary) LS.set('unlockUntil', Date.now() + minutes * MIN);
     const wrong = session.wrong;
     session = null;
-    toast(wasVoluntary ? 'Gut gelernt!' : (wrong ? `Frei für ${minutes} min (${wrong} falsch)` : `Frei für ${minutes} min`));
+    toast(wasVoluntary ? 'Gut gelernt!' : (wrong ? `Frei für ${minutes} min (${wrong} nicht gewusst)` : `Frei für ${minutes} min`));
     showLearn();
     if (settings.useShortcut && !wasVoluntary) setTimeout(runShortcut, 400);
   }
