@@ -504,7 +504,7 @@
   function updateProgress() {
     $('progress-text').textContent = `Karte ${Math.min(session.done + 1, session.required)} von ${session.required}`;
     const p = [];
-    if (session.wrong) p.push(`${session.wrong} falsch`);
+    if (session.wrong) p.push(`${session.wrong} nicht gewusst`);
     if (session.factor < 1) p.push(`Zeit ×${session.factor}`);
     $('penalty-text').textContent = p.join(' · ');
     $('penalty-text').classList.toggle('hidden', !p.length);
@@ -558,7 +558,7 @@
     if (!wasVoluntary) LS.set('unlockUntil', Date.now() + minutes * MIN);
     const wrong = session.wrong;
     session = null;
-    toast(wasVoluntary ? 'Gut gelernt!' : (wrong ? `Frei für ${minutes} min (${wrong} falsch)` : `Frei für ${minutes} min`));
+    toast(wasVoluntary ? 'Gut gelernt!' : (wrong ? `Frei für ${minutes} min (${wrong} nicht gewusst)` : `Frei für ${minutes} min`));
     showLearn();
     if (settings.useShortcut && !wasVoluntary) setTimeout(runShortcut, 400);
   }
@@ -652,6 +652,10 @@
     if (name === 'learn') showLearn();
     if (name === 'decks') renderDecks();
     if (name === 'settings') renderSkipped();
+    if (name === 'setup') {
+      document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = settings.useShortcut; });
+      document.querySelectorAll('.js-interval').forEach((e) => { e.textContent = settings.interval; });
+    }
   }
 
   function bindSettings() {
@@ -685,8 +689,51 @@
     });
   }
 
+  function initSetup() {
+    const url = location.origin + location.pathname;
+    document.querySelectorAll('.js-setup-url-short').forEach((e) => { e.textContent = url.replace(/^https?:\/\//, ''); });
+    document.querySelectorAll('.js-interval').forEach((e) => { e.textContent = settings.interval; });
+    document.querySelectorAll('.js-copy-url').forEach((b) => { b.dataset.copy = url; });
+    document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await navigator.clipboard.writeText(b.dataset.copy); toast('Kopiert: ' + b.dataset.copy); }
+      catch { toast(b.dataset.copy); }
+    }));
+    document.querySelectorAll('.js-lock-now').forEach((b) => b.addEventListener('click', () => { LS.set('unlockUntil', 0); toast('Sperre ist aktiv'); }));
+    $('setup-test-1').addEventListener('click', () => {
+      const until = Math.max(unlockUntil(), Date.now());
+      window.location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent(settings.shortcutName) +
+        '&input=text&text=' + encodeURIComponent(shortcutDate(until));
+    });
+    document.querySelectorAll('.js-useshortcut').forEach((cb) => {
+      cb.checked = settings.useShortcut;
+      cb.addEventListener('change', () => { settings.useShortcut = cb.checked; saveSettings(); $('set-useshortcut').checked = cb.checked; });
+    });
+    const steps = [...document.querySelectorAll('.step')];
+    const syncSteps = () => {
+      const done = LS.get('setupDone', []);
+      let opened = false;
+      steps.forEach((st) => {
+        const isDone = done.includes(st.dataset.step);
+        st.classList.toggle('done', isDone);
+        if (!isDone && !opened) { st.open = true; opened = true; }
+      });
+    };
+    document.querySelectorAll('[data-done]').forEach((b) => b.addEventListener('click', () => {
+      const done = new Set(LS.get('setupDone', [])); done.add(b.dataset.done); LS.set('setupDone', [...done]);
+      const st = b.closest('.step'); st.open = false;
+      syncSteps();
+      const next = st.nextElementSibling;
+      if (next && next.classList.contains('step')) next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+    steps.forEach((st) => st.querySelector('summary').addEventListener('dblclick', () => {
+      LS.set('setupDone', LS.get('setupDone', []).filter((x) => x !== st.dataset.step)); syncSteps();
+    }));
+    syncSteps();
+  }
+
   async function init() {
-    $('setup-url').textContent = location.origin + location.pathname;
+    initSetup();
     document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => showView(t.dataset.view)));
     document.addEventListener('click', (e) => {
       const g = e.target.closest('[data-goto]');
