@@ -265,8 +265,27 @@ h2 {
     }
 
     &__icon {
-      font-size: 3.2rem;
+      width: 3.2rem;
+      height: 3.2rem;
+      fill: currentColor;
+      flex-shrink: 0;
       margin-right: 0.5rem;
+    }
+  }
+}
+
+/* FOOTER */
+.site-footer {
+  background: #262626;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 1.4rem;
+
+  a {
+    color: #ccc;
+
+    &:hover {
+      color: #fff;
     }
   }
 }
