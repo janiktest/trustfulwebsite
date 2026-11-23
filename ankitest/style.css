@@ -207,8 +207,10 @@ main { max-width: 680px; margin: 0 auto; padding: 16px; }
 .faq summary { cursor: pointer; font-weight: 600; }
 .step { scroll-margin-top: 110px; }
 
-/* Englische Begriffe */
-.term, .dotted-hint { text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-underline-offset: 3px; cursor: help; }
-.term:focus { outline: none; }
-.term-tip { position: fixed; z-index: 60; background: var(--text); color: var(--bg); font-size: 13px; padding: 5px 10px; border-radius: 8px; pointer-events: none; max-width: calc(100vw - 32px); white-space: nowrap; box-shadow: 0 4px 12px #0003; }
-.term-tip::before { content: "EN "; opacity: .6; font-size: 11px; }
+/* Englische Bausteine */
+.sc-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sc-row .sc-text { flex: 1; }
+.sc-en { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.en-flag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin-right: 2px; vertical-align: 1px; }
+.sc-en .tok { font-size: 12.5px; }
+.en-inline { color: var(--muted); font-size: .92em; }

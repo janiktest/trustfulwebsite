@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>Anki Lock</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <header class="topbar">
@@ -133,7 +133,7 @@
         <h2>Lernstand</h2>
         <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
-        <p class="muted version">Version 5 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 6 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
       </div>
     </section>
 
@@ -141,7 +141,7 @@
     <section id="view-setup" class="view">
       <div class="panel">
         <h2>Worum geht's?</h2>
-        <p>Damit diese Seite automatisch aufgeht, wenn du z. B. Instagram öffnest, nutzt du die iPhone-App <b class="term" tabindex="0" data-en="Shortcuts">Kurzbefehle</b>. Du richtest einmal drei Dinge ein, das dauert etwa 5 Minuten.</p>
+        <p>Damit diese Seite automatisch aufgeht, wenn du z. B. Instagram öffnest, nutzt du die iPhone-App <b>Kurzbefehle</b>. Du richtest einmal drei Dinge ein, das dauert etwa 5 Minuten.</p>
         <div class="flow">
           <div class="flow-step"><span class="flow-icon">📱</span>Du öffnest Instagram</div>
           <div class="flow-arrow">↓</div>
@@ -151,33 +151,32 @@
           <div class="flow-arrow">↓</div>
           <div class="flow-step"><span class="flow-icon">✅</span>Du bist wieder für <span class="js-interval"></span> Minuten frei</div>
         </div>
-        <p>Die Kurzbefehle-App zeigt die Begriffe in der Sprache deines iPhones. <span class="dotted-hint">Gepunktet unterstrichene Begriffe</span> antippen, um den englischen Namen zu sehen.</p>
         <p class="note">📌 Öffne diese Seite immer in <b>Safari</b>, nicht über ein Home-Bildschirm-Symbol. Sonst sieht sie deine Decks nicht.</p>
       </div>
 
       <details class="panel step" data-step="1">
         <summary><span class="step-num">1</span><span class="step-title">Kurzbefehl „Anki Fertig“<small>merkt sich, bis wann du frei bist</small></span><span class="step-check">✓</span></summary>
         <ol class="howto">
-          <li>Öffne die App <b class="term" tabindex="0" data-en="Shortcuts">Kurzbefehle</b> und tippe unten auf <b class="term" tabindex="0" data-en="Shortcuts">Kurzbefehle</b>, dann oben rechts auf <b>+</b>.</li>
+          <li>Öffne die App <b>Kurzbefehle</b> und tippe unten auf <b>Kurzbefehle</b>, dann oben rechts auf <b>+</b>.</li>
           <li>Tippe oben auf den Namen und nenne ihn genau <code>Anki Fertig</code> <button class="copy" data-copy="Anki Fertig">kopieren</button></li>
-          <li>Tippe unten in die Suche, gib <b class="term" tabindex="0" data-en="Save File">Datei sichern</b> ein und tippe die Aktion an. So soll sie aussehen:
+          <li>Tippe unten in die Suche, gib <b>Datei sichern</b> <span class="en-inline">(Save File)</span> ein und tippe die Aktion an. So soll sie aussehen:
             <div class="sc">
-              <div class="sc-action"><span class="sc-ico blue">📄</span><span><span class="term" tabindex="0" data-en="Save">Sichern</span> <span class="tok term" tabindex="0" data-en="Shortcut Input">Kurzbefehleingabe</span></span></div>
+              <div class="sc-action"><span class="sc-ico blue">📄</span><span class="sc-text"><span class="sc-de">Sichern <span class="tok">Kurzbefehleingabe</span></span><span class="sc-en"><span class="en-flag">EN</span> Save <span class="tok">Shortcut Input</span></span></span></div>
             </div>
-            Falls dort etwas anderes steht: auf das blaue Feld tippen und <b class="term" tabindex="0" data-en="Shortcut Input">Kurzbefehleingabe</b> wählen.
+            Falls dort etwas anderes steht: auf das blaue Feld tippen und <b>Kurzbefehleingabe</b> <span class="en-inline">(Shortcut Input)</span> wählen.
           </li>
           <li>Tippe auf den kleinen Pfeil <b>›</b> in der Aktion, damit sie aufklappt, und stelle ein:
             <div class="sc">
-              <div class="sc-row"><span><span class="term" tabindex="0" data-en="Ask Where to Save">Fragen, wo gesichert werden soll</span></span><span class="sw off"></span></div>
-              <div class="sc-row"><span><span class="term" tabindex="0" data-en="Subpath">Unterpfad</span></span><span class="tok plain">ankilock.txt</span></div>
-              <div class="sc-row"><span><span class="term" tabindex="0" data-en="Overwrite If File Exists">Überschreiben, falls Datei existiert</span></span><span class="sw on"></span></div>
+              <div class="sc-row"><span class="sc-text"><span class="sc-de">Fragen, wo gesichert werden soll</span><span class="sc-en"><span class="en-flag">EN</span> Ask Where to Save</span></span><span class="sw off"></span></div>
+              <div class="sc-row"><span class="sc-text"><span class="sc-de">Unterpfad</span><span class="sc-en"><span class="en-flag">EN</span> Subpath</span></span><span class="tok plain">ankilock.txt</span></div>
+              <div class="sc-row"><span class="sc-text"><span class="sc-de">Überschreiben, falls Datei existiert</span><span class="sc-en"><span class="en-flag">EN</span> Overwrite If File Exists</span></span><span class="sw on"></span></div>
             </div>
             Den Unterpfad zum Kopieren: <code>ankilock.txt</code> <button class="copy" data-copy="ankilock.txt">kopieren</button>
           </li>
-          <li>Oben auf <b class="term" tabindex="0" data-en="Done">Fertig</b> tippen.</li>
+          <li>Oben auf <b>Fertig</b> tippen.</li>
         </ol>
         <div class="test-box">
-          <b>Testen:</b> Tippe auf den Button. Die Kurzbefehle-App geht kurz auf. Wenn iOS fragt, ob der Kurzbefehl Dateien sichern darf, wähle <b class="term" tabindex="0" data-en="Always Allow">Immer erlauben</b>.
+          <b>Testen:</b> Tippe auf den Button. Die Kurzbefehle-App geht kurz auf. Wenn iOS fragt, ob der Kurzbefehl Dateien sichern darf, wähle <b>Immer erlauben</b>.
           <button class="btn primary wide" id="setup-test-1">„Anki Fertig“ jetzt testen</button>
           <label class="check"><input type="checkbox" class="js-useshortcut"> Ab jetzt nach jedem Lernen automatisch starten</label>
         </div>
@@ -187,21 +186,21 @@
       <details class="panel step" data-step="2">
         <summary><span class="step-num">2</span><span class="step-title">Kurzbefehl „Anki Sperre“<small>prüft, ob du gerade frei bist</small></span><span class="step-check">✓</span></summary>
         <ol class="howto">
-          <li>Wieder in <b class="term" tabindex="0" data-en="Shortcuts">Kurzbefehle</b> auf <b>+</b> tippen und ihn <code>Anki Sperre</code> nennen. <button class="copy" data-copy="Anki Sperre">kopieren</button></li>
+          <li>Wieder in <b>Kurzbefehle</b> auf <b>+</b> tippen und ihn <code>Anki Sperre</code> nennen. <button class="copy" data-copy="Anki Sperre">kopieren</button></li>
           <li>Füge nacheinander diese vier Aktionen hinzu (jeweils über die Suche unten). Am Ende soll es so aussehen:
             <div class="sc">
-              <div class="sc-action"><span class="sc-ico blue">📄</span><span><span class="tok">ankilock.txt</span> aus <span class="tok term" tabindex="0" data-en="Shortcuts">Shortcuts</span> abrufen</span></div>
-              <div class="sc-action"><span class="sc-ico red">📅</span><span>Daten aus <span class="tok term" tabindex="0" data-en="File">Datei</span> abrufen</span></div>
-              <div class="sc-action"><span class="sc-ico grey">⑂</span><span>Wenn <span class="tok term" tabindex="0" data-en="Dates">Daten</span> <span class="tok term" tabindex="0" data-en="is before">ist vor</span> <span class="tok term" tabindex="0" data-en="Current Date">Aktuelles Datum</span></span></div>
-              <div class="sc-action indent"><span class="sc-ico blue">🧭</span><span><span class="tok js-setup-url-short"></span> öffnen</span></div>
-              <div class="sc-action"><span class="sc-ico grey">⑂</span><span><span class="term" tabindex="0" data-en="End If">Ende Wenn</span></span></div>
+              <div class="sc-action"><span class="sc-ico blue">📄</span><span class="sc-text"><span class="sc-de"><span class="tok">ankilock.txt</span> aus <span class="tok">Shortcuts</span> abrufen</span><span class="sc-en"><span class="en-flag">EN</span> Get <span class="tok">ankilock.txt</span> from <span class="tok">Shortcuts</span></span></span></div>
+              <div class="sc-action"><span class="sc-ico red">📅</span><span class="sc-text"><span class="sc-de">Daten aus <span class="tok">Datei</span> abrufen</span><span class="sc-en"><span class="en-flag">EN</span> Get dates from <span class="tok">File</span></span></span></div>
+              <div class="sc-action"><span class="sc-ico grey">⑂</span><span class="sc-text"><span class="sc-de">Wenn <span class="tok">Daten</span> <span class="tok">ist vor</span> <span class="tok">Aktuelles Datum</span></span><span class="sc-en"><span class="en-flag">EN</span> If <span class="tok">Dates</span> <span class="tok">is before</span> <span class="tok">Current Date</span></span></span></div>
+              <div class="sc-action indent"><span class="sc-ico blue">🧭</span><span class="sc-text"><span class="sc-de"><span class="tok js-setup-url-short"></span> öffnen</span><span class="sc-en"><span class="en-flag">EN</span> Open <span class="tok js-setup-url-short"></span></span></span></div>
+              <div class="sc-action"><span class="sc-ico grey">⑂</span><span class="sc-text"><span class="sc-de">Ende Wenn</span><span class="sc-en"><span class="en-flag">EN</span> End If</span></span></div>
             </div>
           </li>
-          <li><b>Aktion 1:</b> Suche nach <b class="term" tabindex="0" data-en="Get File">Datei abrufen</b>. Bei Ordner <b class="term" tabindex="0" data-en="Shortcuts">Shortcuts</b> wählen, als Pfad <code>ankilock.txt</code> eintragen. Aufklappen und „<span class="term" tabindex="0" data-en="Error If Not Found">Fehler, wenn nicht gefunden</span>“ <b class="term" tabindex="0" data-en="turn off">ausschalten</b>.</li>
-          <li><b>Aktion 2:</b> Suche nach <b class="term" tabindex="0" data-en="Dates">Daten</b> und nimm die Aktion mit dem Kalender-Symbol, die „… aus Eingabe abrufen“ heißt (englisch: <i>Get Dates from Input</i>).</li>
-          <li><b>Aktion 3:</b> Suche nach <b class="term" tabindex="0" data-en="If">Wenn</b>. Tippe auf „<span class="term" tabindex="0" data-en="Condition">Bedingung</span>“ und wähle <b class="term" tabindex="0" data-en="is before">ist vor</b>. Tippe dann auf das leere Feld dahinter und wähle <b class="term" tabindex="0" data-en="Current Date">Aktuelles Datum</b>.</li>
-          <li><b>Aktion 4:</b> Suche nach <b class="term" tabindex="0" data-en="Open URLs">URL öffnen</b> und ziehe die Aktion <i>zwischen</i> „<span class="term" tabindex="0" data-en="If">Wenn</span>“ und „<span class="term" tabindex="0" data-en="Otherwise">Sonst</span>“. Als URL diese Adresse einfügen: <button class="copy js-copy-url">Adresse kopieren</button></li>
-          <li>Den „<span class="term" tabindex="0" data-en="Otherwise">Sonst</span>“-Teil lässt du einfach leer. Oben auf <b class="term" tabindex="0" data-en="Done">Fertig</b> tippen.</li>
+          <li><b>Aktion 1:</b> Suche nach <b>Datei abrufen</b> <span class="en-inline">(Get File)</span>. Bei Ordner <b>Shortcuts</b> wählen, als Pfad <code>ankilock.txt</code> eintragen. Aufklappen und „Fehler, wenn nicht gefunden“ <b>ausschalten</b>.</li>
+          <li><b>Aktion 2:</b> Suche nach <b>Daten</b> und nimm die Aktion mit dem Kalender-Symbol, die „… aus Eingabe abrufen“ heißt <span class="en-inline">(Get Dates from Input)</span>.</li>
+          <li><b>Aktion 3:</b> Suche nach <b>Wenn</b> <span class="en-inline">(If)</span>. Tippe auf „Bedingung“ und wähle <b>ist vor</b>. Tippe dann auf das leere Feld dahinter und wähle <b>Aktuelles Datum</b>.</li>
+          <li><b>Aktion 4:</b> Suche nach <b>URL öffnen</b> <span class="en-inline">(Open URLs)</span> und ziehe die Aktion <i>zwischen</i> „Wenn“ und „Sonst“. Als URL diese Adresse einfügen: <button class="copy js-copy-url">Adresse kopieren</button></li>
+          <li>Den „Sonst“-Teil lässt du einfach leer. Oben auf <b>Fertig</b> tippen.</li>
         </ol>
         <div class="test-box">
           <b>Testen:</b> Tippe auf „Sperre aktivieren“, dann führe „Anki Sperre“ in der Kurzbefehle-App einmal von Hand aus. Diese Seite sollte sich öffnen.
@@ -213,11 +212,11 @@
       <details class="panel step" data-step="3">
         <summary><span class="step-num">3</span><span class="step-title">Automation<small>startet die Prüfung, wenn du eine App öffnest</small></span><span class="step-check">✓</span></summary>
         <ol class="howto">
-          <li>In der App <b class="term" tabindex="0" data-en="Shortcuts">Kurzbefehle</b> unten auf <b class="term" tabindex="0" data-en="Automation">Automation</b> tippen, dann auf <b>+</b> (bzw. „<span class="term" tabindex="0" data-en="New Automation">Neue Automation</span>“).</li>
-          <li><b class="term" tabindex="0" data-en="App">App</b> auswählen.</li>
-          <li>Bei „App“ auf <b class="term" tabindex="0" data-en="Choose">Auswählen</b> tippen und die Apps markieren, die gesperrt werden sollen, z. B. Instagram, TikTok, YouTube.</li>
-          <li>Darunter <b class="term" tabindex="0" data-en="Is Opened">Ist geöffnet</b> anhaken und <b class="term" tabindex="0" data-en="Run Immediately">Sofort ausführen</b> wählen (nicht „<span class="term" tabindex="0" data-en="Run After Confirmation">Vor dem Ausführen bestätigen</span>“). Auf <b class="term" tabindex="0" data-en="Next">Weiter</b> tippen.</li>
-          <li>Unter „<span class="term" tabindex="0" data-en="My Shortcuts">Meine Kurzbefehle</span>“ <b>Anki Sperre</b> antippen. Fertig.</li>
+          <li>In der App <b>Kurzbefehle</b> unten auf <b>Automation</b> tippen, dann auf <b>+</b> (bzw. „Neue Automation“).</li>
+          <li><b>App</b> auswählen.</li>
+          <li>Bei „App“ auf <b>Auswählen</b> tippen und die Apps markieren, die gesperrt werden sollen, z. B. Instagram, TikTok, YouTube.</li>
+          <li>Darunter <b>Ist geöffnet</b> anhaken und <b>Sofort ausführen</b> wählen (nicht „Vor dem Ausführen bestätigen“). Auf <b>Weiter</b> tippen.</li>
+          <li>Unter „Meine Kurzbefehle“ <b>Anki Sperre</b> antippen. Fertig.</li>
         </ol>
         <button class="btn secondary wide step-done" data-done="3">Schritt 3 erledigt</button>
       </details>
@@ -236,9 +235,9 @@
       <div class="panel prose">
         <h2>Hilfe, es klappt nicht</h2>
         <details class="faq"><summary>Die Seite geht auf, obwohl ich gerade gelernt habe</summary>
-          <p>Dann hat „Anki Fertig“ die Zeit nicht gespeichert. Prüfe, ob bei Schritt 1 „Ab jetzt nach jedem Lernen automatisch starten“ an ist und ob der Name genau <code>Anki Fertig</code> lautet. In der App <b class="term" tabindex="0" data-en="Files">Dateien</b> unter iCloud Drive → Shortcuts sollte eine Datei <code>ankilock.txt</code> liegen.</p></details>
+          <p>Dann hat „Anki Fertig“ die Zeit nicht gespeichert. Prüfe, ob bei Schritt 1 „Ab jetzt nach jedem Lernen automatisch starten“ an ist und ob der Name genau <code>Anki Fertig</code> lautet. In der App <b>Dateien</b> unter iCloud Drive → Shortcuts sollte eine Datei <code>ankilock.txt</code> liegen.</p></details>
         <details class="faq"><summary>Beim Öffnen von Instagram passiert gar nichts</summary>
-          <p>Prüfe in der Automation, dass <b class="term" tabindex="0" data-en="Run Immediately">Sofort ausführen</b> gewählt ist. Teste außerdem „Anki Sperre“ von Hand, nachdem du die Sperre aktiviert hast (Schritt 2).</p></details>
+          <p>Prüfe in der Automation, dass <b>Sofort ausführen</b> gewählt ist. Teste außerdem „Anki Sperre“ von Hand, nachdem du die Sperre aktiviert hast (Schritt 2).</p></details>
         <details class="faq"><summary>Meine Decks sind weg</summary>
           <p>Wahrscheinlich ist die Seite in einem anderen Browser, im privaten Modus oder als Home-Bildschirm-App aufgegangen. Öffne sie in normalem Safari. Falls die Safari-Daten gelöscht wurden, importiere die <code>.apkg</code> neu.</p></details>
         <p class="muted">Das ist eine „weiche“ Sperre zum Ausprobieren: Du kannst sie umgehen. Eine echte Sperre geht erst mit einer nativen App über die Screen Time API.</p>
@@ -247,11 +246,10 @@
   </main>
 
   <div id="toast" class="toast hidden"></div>
-  <div id="term-tip" class="term-tip hidden" role="tooltip"></div>
 
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
