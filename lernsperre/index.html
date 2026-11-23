@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>LernSperre</title>
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
   <div id="nav-handle" class="nav-handle" aria-label="Menü anzeigen"></div>
@@ -17,7 +17,7 @@
       <button class="tab active" data-view="learn">Lernen</button>
       <button class="tab" data-view="decks">Decks</button>
       <button class="tab" data-view="settings">Einstellungen</button>
-      <button class="tab" data-view="setup">Einrichtung</button>
+      <button class="tab lock-only" data-view="setup">Einrichtung</button>
     </nav>
   </header>
 
@@ -37,10 +37,15 @@
           <li><span>📚</span>Deine eigenen Anki-Decks (.apkg). Alles bleibt auf deinem iPhone.</li>
           <li><span>⏱️</span>Du bestimmst, wie viele Karten und wie lange du danach frei bist.</li>
           <li><span>📱</span><div>Gemacht für <b>iPhone und iPad</b>, denn die Sperre läuft über die Kurzbefehle-App von Apple.</div></li>
-          <li><span>⚡</span>Einrichtung in etwa 3 Minuten. Wir gehen sie jetzt zusammen durch.</li>
         </ul>
-        <p class="note ob-not-ios hidden">⚠️ Du bist gerade nicht auf einem iPhone oder iPad. Lernen funktioniert hier auch, die Sperre aber nur auf iPhone und iPad.</p>
-        <p class="note">📌 Nutze diese Seite in <b>Safari</b>, nicht als Home-Bildschirm-App.</p>
+        <p class="ob-choose-label"><b>Wie möchtest du LernSperre nutzen?</b></p>
+        <div class="mode-choice">
+          <button type="button" class="mode-opt" data-appmode="lock"><span>🔒</span><b>Mit App-Sperre</b><small>Für iPhone und iPad. Einrichtung in etwa 3 Minuten.</small></button>
+          <button type="button" class="mode-opt" data-appmode="learn"><span>📖</span><b>Nur lernen</b><small>Kein iPhone? Einfach Karten lernen wie in einer normalen Lern-App, ohne Kurzbefehle.</small></button>
+        </div>
+        <p class="note ob-not-ios hidden">Du bist gerade nicht auf einem iPhone oder iPad, deshalb ist „Nur lernen“ vorausgewählt. Die Sperre funktioniert nur auf iPhone und iPad.</p>
+        <p class="note lock-only">📌 Nutze diese Seite in <b>Safari</b>, nicht als Home-Bildschirm-App.</p>
+        <p class="muted small">Du kannst das jederzeit unter Einstellungen ändern.</p>
         <p class="muted small">LernSperre funktioniert mit Anki-Decks (.apkg), ist aber nicht mit Anki oder Ankitects verbunden.</p>
       </section>
 
@@ -86,8 +91,10 @@
       <section class="ob-step" data-ob="4">
         <div class="ob-hero">🎉</div>
         <h2>Geschafft!</h2>
-        <p>Probier es aus: Tippe auf „Los geht's“, wechsle zu Instagram (oder einer anderen gewählten App) und diese Seite sollte sich öffnen.</p>
-        <p class="muted">Klappt etwas nicht? Unter <b>Einrichtung</b> gibt es eine ausführliche Anleitung mit Hilfe-Abschnitt. Die Einführung kannst du jederzeit unter Einstellungen erneut starten.</p>
+        <p class="lock-only">Probier es aus: Tippe auf „Los geht's“, wechsle zu Instagram (oder einer anderen gewählten App) und diese Seite sollte sich öffnen.</p>
+        <p class="learn-only">Tippe auf „Los geht's“ und lerne deine Karten. Mit Spaced Repetition kommen jeden Tag die fälligen Karten dran, bis für heute alles erledigt ist.</p>
+        <p class="muted learn-only">Die Einführung kannst du jederzeit unter Einstellungen erneut starten. Dort kannst du auch auf die App-Sperre umstellen.</p>
+        <p class="muted lock-only">Klappt etwas nicht? Unter <b>Einrichtung</b> gibt es eine ausführliche Anleitung mit Hilfe-Abschnitt. Die Einführung kannst du jederzeit unter Einstellungen erneut starten.</p>
       </section>
 
       <div class="ob-nav">
@@ -111,6 +118,13 @@
         <p class="muted">Noch <span id="free-left"></span>. Du kannst zurück zu deiner App.</p>
         <button id="btn-run-shortcut" class="btn secondary hidden">Kurzbefehl erneut senden</button>
         <button id="btn-learn-anyway" class="btn ghost">Trotzdem eine Karte lernen</button>
+      </div>
+
+      <div id="learn-done" class="panel hidden">
+        <div class="status-icon ok">🎉</div>
+        <h2>Alles gelernt!</h2>
+        <p class="muted">Für heute ist nichts mehr fällig. Schau morgen wieder vorbei.</p>
+        <button id="btn-learn-ahead" class="btn ghost">Trotzdem weiterlernen</button>
       </div>
 
       <div id="learn-session" class="hidden">
@@ -163,12 +177,23 @@
     <!-- EINSTELLUNGEN -->
     <section id="view-settings" class="view">
       <div class="panel form">
-        <h2>Ablauf</h2>
+        <h2>Nutzung</h2>
         <label class="row">
+          <span>Modus</span>
+          <select id="set-appmode">
+            <option value="lock">Mit App-Sperre (iPhone/iPad)</option>
+            <option value="learn">Nur lernen</option>
+          </select>
+        </label>
+        <p class="muted learn-only">„Nur lernen“: keine Sperre und keine Kurzbefehle. Du lernst einfach deine Karten, so lange du willst.</p>
+      </div>
+      <div class="panel form">
+        <h2>Ablauf</h2>
+        <label class="row lock-only">
           <span>Minuten frei nach dem Entsperren</span>
           <input type="number" id="set-interval" min="1" max="600" inputmode="numeric">
         </label>
-        <label class="row">
+        <label class="row lock-only">
           <span>Karten zum Entsperren</span>
           <input type="number" id="set-cards" min="1" max="20" inputmode="numeric">
         </label>
@@ -205,13 +230,13 @@
         <p class="muted">Karten, die du mit „Noch nicht gehabt“ überspringst, kommen nicht mehr dran, bis du sie hier zurückholst.</p>
         <div id="skipped-list" class="skipped-list"></div>
       </div>
-      <div class="panel form">
+      <div class="panel form lock-only">
         <h2>Strafe, wenn du eine Karte nicht wusstest</h2>
         <label class="check"><input type="checkbox" id="pen-halve"> Freie Zeit halbiert sich (pro nicht gewusster Karte)</label>
         <label class="check"><input type="checkbox" id="pen-extra"> Noch eine Karte (pro nicht gewusster Karte, max. 5 extra)</label>
         <label class="check"><input type="checkbox" id="pen-repeat"> Nicht gewusste Karte kommt am Ende nochmal</label>
       </div>
-      <div class="panel form">
+      <div class="panel form lock-only">
         <h2>Kurzbefehl</h2>
         <label class="check"><input type="checkbox" id="set-useshortcut"> Nach dem Lernen den Kurzbefehl starten</label>
         <label class="row">
@@ -222,11 +247,11 @@
       </div>
       <div class="panel form">
         <h2>Lernstand</h2>
-        <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
+        <button class="btn secondary lock-only" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
         <button class="btn secondary" id="btn-show-intro">Einführung erneut zeigen</button>
         <p class="muted small">LernSperre funktioniert mit Anki-Decks (.apkg), ist aber ein unabhängiges Projekt und nicht mit Anki oder Ankitects verbunden.</p>
-        <p class="muted version">Version 13 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 14 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
         <p class="muted"><a href="../impressum/">Impressum</a> · <a href="../datenschutz/">Datenschutzerklärung</a></p>
       </div>
     </section>
@@ -358,6 +383,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>

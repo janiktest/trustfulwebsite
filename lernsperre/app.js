@@ -21,7 +21,7 @@
     interval: 5, cards: 1, mode: 'srs', newPerDay: 20,
     cardScale: 100, imgMax: 50, hideTitle: false, autoHideNav: false,
     penHalve: true, penExtra: false, penRepeat: true,
-    useShortcut: false, shortcutName: 'LernSperre Fertig', skipEnabled: true, skipOnceEnabled: true,
+    appMode: 'lock', appModeChosen: false, useShortcut: false, shortcutName: 'LernSperre Fertig', skipEnabled: true, skipOnceEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   // Einmalige Umstellung auf die neuen Standardwerte (Spaced Repetition, 5 Minuten)
@@ -370,7 +370,7 @@
   const MIN = 60 * 1000, DAY = 24 * 60 * MIN;
   const todayKey = () => new Date().toISOString().slice(0, 10);
 
-  async function pickCard(exclude) {
+  async function pickCard(exclude, strict) {
     const cards = selectedCards().filter((c) => !exclude.has(c.key));
     if (!cards.length) return null;
     if (settings.mode === 'random') {
@@ -391,6 +391,11 @@
       if (fresh.length) return fresh[0];
     }
     // nichts fällig: die als nächstes fällige Karte vorziehen
+    if (strict) { // Nur-lernen-Modus: nur Karten, die in den nächsten 20 Minuten fällig werden
+      const soon = cards.filter((c) => sched.has(c.key) && sched.get(c.key).due <= now + 20 * MIN)
+        .sort((a, b) => sched.get(a.key).due - sched.get(b.key).due);
+      return soon[0] || null;
+    }
     const known = cards.filter((c) => sched.has(c.key)).sort((a, b) => sched.get(a.key).due - sched.get(b.key).due);
     return known[0] || cards[Math.floor(Math.random() * cards.length)];
   }
@@ -444,11 +449,17 @@
   }
 
   let freeTimer = null;
+  const learnOnly = () => settings.appMode === 'learn';
   async function showLearn() {
     clearInterval(freeTimer);
-    ['learn-empty', 'learn-free', 'learn-session'].forEach((id) => $(id).classList.add('hidden'));
+    ['learn-empty', 'learn-free', 'learn-session', 'learn-done'].forEach((id) => $(id).classList.add('hidden'));
     if (session) { $('learn-session').classList.remove('hidden'); syncSkipButtons(); return; }
     if (!selectedCards().length) { $('learn-empty').classList.remove('hidden'); return; }
+    if (learnOnly()) {
+      if (settings.mode === 'srs' && !(await pickCard(new Set(), true))) { showLearnDone(); return; }
+      startSession(false);
+      return;
+    }
     const until = unlockUntil();
     if (until > Date.now()) {
       $('learn-free').classList.remove('hidden');
@@ -466,14 +477,38 @@
     startSession(false);
   }
 
-  function startSession(voluntary) {
-    session = { required: settings.cards, done: 0, wrong: 0, extra: 0, factor: 1, seen: new Set(), repeat: [], voluntary };
+  function startSession(voluntary, ahead) {
+    session = { required: settings.cards, done: 0, wrong: 0, extra: 0, factor: 1, seen: new Set(), repeat: [], voluntary, ahead: !!ahead };
     $('learn-session').classList.remove('hidden');
-    ['learn-empty', 'learn-free'].forEach((id) => $(id).classList.add('hidden'));
+    ['learn-empty', 'learn-free', 'learn-done'].forEach((id) => $(id).classList.add('hidden'));
     nextCard();
   }
 
+  function showLearnDone() {
+    ['learn-empty', 'learn-free', 'learn-session'].forEach((id) => $(id).classList.add('hidden'));
+    $('learn-done').classList.remove('hidden');
+  }
+
+  // Nur-lernen-Modus: keine feste Kartenzahl, im SRS-Modus bis nichts mehr fällig ist
+  async function nextLearnCard() {
+    const last = session.card ? session.card.key : null;
+    const strict = settings.mode === 'srs' && !session.ahead;
+    let card = await pickCard(new Set(last ? [last] : []), strict);
+    if (!card && last) card = await pickCard(new Set(), strict);
+    if (!card) { const n = session.done; session = null; if (n) toast(`${n} ${n === 1 ? 'Karte' : 'Karten'} gelernt`); showLearnDone(); return; }
+    session.card = card;
+    session.revealed = false;
+    updateProgress();
+    $('btn-show').classList.remove('hidden');
+    syncSkipButtons();
+    $('grade-random').classList.add('hidden');
+    $('grade-srs').classList.add('hidden');
+    $('deck-label').textContent = await renderCardInto($('card-host'), card, false);
+    window.scrollTo({ top: 0 });
+  }
+
   async function nextCard() {
+    if (learnOnly()) return nextLearnCard();
     let card = null;
     const last = session.card ? session.card.key : null;
     if (session.repeat.length && session.done >= session.required - session.repeat.length) {
@@ -529,6 +564,11 @@
   }
 
   function updateProgress() {
+    if (learnOnly()) {
+      $('progress-text').textContent = session.done ? `${session.done} gelernt` : 'Los geht\'s';
+      $('penalty-text').classList.add('hidden');
+      return;
+    }
     $('progress-text').textContent = `Karte ${Math.min(session.done + 1, session.required)} von ${session.required}`;
     const p = [];
     if (session.wrong) p.push(`${session.wrong} nicht gewusst`);
@@ -569,6 +609,7 @@
       LS.set('recent', recent.slice(0, keep));
     }
     session.done++;
+    if (learnOnly()) { nextCard(); return; }
     if (g === 1) {
       session.wrong++;
       if (settings.penHalve) session.factor = session.factor / 2;
@@ -673,6 +714,7 @@
   }
 
   function showView(name) {
+    if (name === 'setup' && learnOnly()) name = 'learn';
     document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.view === name));
     document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     LS.set('view', name);
@@ -705,6 +747,8 @@
     range('set-imgmax', 'imgMax', 'out-imgmax', (v) => v + ' % der Bildschirmhöhe');
     const disp = (id, key) => { const el = $(id); el.checked = settings[key]; el.addEventListener('change', () => { settings[key] = el.checked; saveSettings(); applyDisplay(); }); };
     disp('set-hidetitle', 'hideTitle'); disp('set-autohidenav', 'autoHideNav');
+    const am = $('set-appmode'); am.value = settings.appMode;
+    am.addEventListener('change', () => setAppMode(am.value));
     const mode = $('set-mode'); mode.value = settings.mode;
     const syncSrs = () => document.querySelectorAll('.srs-only').forEach((e) => e.classList.toggle('hidden', settings.mode !== 'srs'));
     mode.addEventListener('change', () => { settings.mode = mode.value; saveSettings(); syncSrs(); });
@@ -723,6 +767,21 @@
       const d = await db(); const tx = d.transaction('sched', 'readwrite'); tx.objectStore('sched').clear(); await txDone(tx);
       LS.set('newCount', {}); LS.set('recent', []); toast('Lernfortschritt zurückgesetzt');
     });
+  }
+
+  function setAppMode(m) {
+    settings.appMode = m === 'learn' ? 'learn' : 'lock';
+    settings.appModeChosen = true;
+    saveSettings();
+    $('set-appmode').value = settings.appMode;
+    applyAppMode();
+    session = null;
+    if ($('view-learn').classList.contains('active')) showLearn();
+  }
+  function applyAppMode() {
+    document.body.classList.toggle('mode-learn', learnOnly());
+    document.querySelectorAll('[data-appmode]').forEach((b) => b.classList.toggle('selected', b.dataset.appmode === settings.appMode));
+    if (learnOnly() && $('view-setup').classList.contains('active')) showView('learn');
   }
 
   function applyDisplay() {
@@ -772,10 +831,12 @@
   }
 
   // ---------- Einführung ----------
-  let obStep = 0;
-  const OB_STEPS = 5;
+  let obStep = 0; // Index in obSteps()
+  const obSteps = () => (learnOnly() ? [0, 1, 4] : [0, 1, 2, 3, 4]);
   function showOnboarding(step) {
     obStep = step || 0;
+    // Erster Besuch ohne iPhone/iPad: „Nur lernen“ vorschlagen
+    if (!settings.appModeChosen && !isAppleMobile()) { settings.appMode = 'learn'; saveSettings(); $('set-appmode').value = 'learn'; applyAppMode(); }
     $('onboarding').classList.remove('hidden');
     document.body.classList.add('ob-open');
     renderOnboarding();
@@ -787,7 +848,9 @@
     if (goLearn) { LS.set('unlockUntil', 0); showView(allCards.length ? 'learn' : 'decks'); }
   }
   function renderOnboarding() {
-    document.querySelectorAll('.ob-step').forEach((sec) => sec.classList.toggle('active', Number(sec.dataset.ob) === obStep));
+    const steps = obSteps(); const OB_STEPS = steps.length;
+    if (obStep >= OB_STEPS) obStep = OB_STEPS - 1;
+    document.querySelectorAll('.ob-step').forEach((sec) => sec.classList.toggle('active', Number(sec.dataset.ob) === steps[obStep]));
     $('ob-dots').innerHTML = Array.from({ length: OB_STEPS }, (_, i) => `<span class="${i === obStep ? 'on' : i < obStep ? 'done' : ''}"></span>`).join('');
     $('ob-back').style.visibility = obStep === 0 ? 'hidden' : 'visible';
     $('ob-skip').style.visibility = obStep === OB_STEPS - 1 ? 'hidden' : 'visible';
@@ -805,11 +868,12 @@
   function initOnboarding() {
     document.querySelectorAll('.ob-not-ios').forEach((e) => e.classList.toggle('hidden', isAppleMobile()));
     $('ob-next').addEventListener('click', () => {
-      if (obStep >= OB_STEPS - 1) { closeOnboarding(true); return; }
+      if (obStep >= obSteps().length - 1) { closeOnboarding(true); return; }
       obStep++; renderOnboarding();
     });
     $('ob-back').addEventListener('click', () => { if (obStep > 0) { obStep--; renderOnboarding(); } });
     $('ob-skip').addEventListener('click', () => closeOnboarding(false));
+    document.querySelectorAll('[data-appmode]').forEach((b) => b.addEventListener('click', () => { setAppMode(b.dataset.appmode); renderOnboarding(); }));
     $('ob-file').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
       if (await doImport(file, $('ob-import-status'))) renderOnboarding();
@@ -879,6 +943,7 @@
 
   async function init() {
     applyDisplay();
+    applyAppMode();
     initNavGestures();
     initSetup();
     document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => showView(t.dataset.view)));
@@ -899,6 +964,7 @@
     document.querySelectorAll('[data-grade]').forEach((b) => b.addEventListener('click', () => grade(Number(b.dataset.grade))));
     $('card-host').addEventListener('click', reveal);
     $('btn-learn-anyway').addEventListener('click', () => startSession(true));
+    $('btn-learn-ahead').addEventListener('click', () => startSession(true, true));
     $('btn-run-shortcut').addEventListener('click', runShortcut);
 
     $('deck-tree').addEventListener('change', (e) => {
