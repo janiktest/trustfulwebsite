@@ -732,31 +732,7 @@
     syncSteps();
   }
 
-  function initTerms() {
-    const tip = $('term-tip');
-    let current = null;
-    const hide = () => { tip.classList.add('hidden'); current = null; };
-    const show = (el) => {
-      current = el;
-      tip.textContent = el.dataset.en;
-      tip.classList.remove('hidden');
-      const r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
-      const left = Math.min(Math.max(16, r.left + r.width / 2 - t.width / 2), window.innerWidth - t.width - 16);
-      const top = r.top - t.height - 6 < 8 ? r.bottom + 6 : r.top - t.height - 6;
-      tip.style.left = left + 'px'; tip.style.top = top + 'px';
-    };
-    document.addEventListener('click', (e) => {
-      const el = e.target.closest('.term');
-      if (el) show(el); else hide();
-    });
-    // Hover nur mit echter Maus; auf dem Handy reicht Antippen
-    document.addEventListener('pointerover', (e) => { if (e.pointerType !== 'mouse') return; const el = e.target.closest('.term'); if (el) show(el); });
-    document.addEventListener('pointerout', (e) => { if (e.pointerType === 'mouse' && e.target.closest('.term')) hide(); });
-    window.addEventListener('scroll', hide, { passive: true });
-  }
-
   async function init() {
-    initTerms();
     initSetup();
     document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => showView(t.dataset.view)));
     document.addEventListener('click', (e) => {
