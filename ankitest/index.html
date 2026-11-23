@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
+  <title>Anki Lock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Anki Lock</h1>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="learn">Lernen</button>
+      <button class="tab" data-view="decks">Decks</button>
+      <button class="tab" data-view="settings">Einstellungen</button>
+      <button class="tab" data-view="setup">Einrichtung</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- LERNEN -->
+    <section id="view-learn" class="view active">
+      <div id="learn-empty" class="panel hidden">
+        <h2>Noch keine Karten</h2>
+        <p>Importiere zuerst eine <code>.apkg</code>-Datei unter <a href="#" data-goto="decks">Decks</a> und wähle aus, was du lernen willst.</p>
+      </div>
+
+      <div id="learn-free" class="panel hidden">
+        <div class="status-icon ok">✓</div>
+        <h2>Frei bis <span id="free-until"></span></h2>
+        <p class="muted">Noch <span id="free-left"></span>. Du kannst zurück zu deiner App.</p>
+        <button id="btn-run-shortcut" class="btn secondary hidden">Kurzbefehl erneut senden</button>
+        <button id="btn-learn-anyway" class="btn ghost">Trotzdem eine Karte lernen</button>
+      </div>
+
+      <div id="learn-session" class="hidden">
+        <div class="progress">
+          <span id="progress-text"></span>
+          <span id="penalty-text" class="penalty hidden"></span>
+        </div>
+        <div class="card-frame"><div id="card-host"></div></div>
+        <div class="deck-label" id="deck-label"></div>
+        <div class="answer-bar">
+          <button id="btn-show" class="btn primary wide">Antwort zeigen</button>
+          <div id="grade-random" class="grades hidden">
+            <button class="btn bad" data-grade="1">Falsch</button>
+            <button class="btn good" data-grade="3">Richtig</button>
+          </div>
+          <div id="grade-srs" class="grades four hidden">
+            <button class="btn bad" data-grade="1">Nochmal<small id="lbl-1"></small></button>
+            <button class="btn hard" data-grade="2">Schwer<small id="lbl-2"></small></button>
+            <button class="btn good" data-grade="3">Gut<small id="lbl-3"></small></button>
+            <button class="btn easy" data-grade="4">Einfach<small id="lbl-4"></small></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DECKS -->
+    <section id="view-decks" class="view">
+      <div class="panel">
+        <h2>Anki-Deck importieren</h2>
+        <p class="muted">Wähle eine <code>.apkg</code>-Datei (in Anki: Datei → Exportieren → „Anki-Deck-Paket“). Alles bleibt auf deinem Gerät.</p>
+        <label class="btn primary file-btn">
+          .apkg-Datei auswählen
+          <input type="file" id="file-input" accept=".apkg,.colpkg,application/octet-stream,application/zip" hidden>
+        </label>
+        <div id="import-status" class="import-status hidden"></div>
+      </div>
+      <div class="panel">
+        <h2>Was soll abgefragt werden?</h2>
+        <p class="muted">Ein Haken bei einem Deck schließt alle Unterdecks ein.</p>
+        <div id="deck-tree" class="deck-tree"><p class="muted">Noch nichts importiert.</p></div>
+        <p class="selected-count" id="selected-count"></p>
+      </div>
+      <div class="panel" id="imports-panel"></div>
+    </section>
+
+    <!-- EINSTELLUNGEN -->
+    <section id="view-settings" class="view">
+      <div class="panel form">
+        <h2>Ablauf</h2>
+        <label class="row">
+          <span>Minuten frei nach einer Abfrage</span>
+          <input type="number" id="set-interval" min="1" max="600" inputmode="numeric">
+        </label>
+        <label class="row">
+          <span>Karten pro Abfrage</span>
+          <input type="number" id="set-cards" min="1" max="20" inputmode="numeric">
+        </label>
+        <label class="row">
+          <span>Abfrage-Modus</span>
+          <select id="set-mode">
+            <option value="random">Zufällig</option>
+            <option value="srs">Spaced Repetition</option>
+          </select>
+        </label>
+        <label class="row srs-only">
+          <span>Neue Karten pro Tag</span>
+          <input type="number" id="set-newperday" min="0" max="500" inputmode="numeric">
+        </label>
+      </div>
+      <div class="panel form">
+        <h2>Strafe bei falscher Antwort</h2>
+        <label class="check"><input type="checkbox" id="pen-halve"> Freie Zeit halbiert sich (pro Fehler)</label>
+        <label class="check"><input type="checkbox" id="pen-extra"> Noch eine Karte (pro Fehler, max. 5 extra)</label>
+        <label class="check"><input type="checkbox" id="pen-repeat"> Falsche Karte kommt am Ende nochmal</label>
+      </div>
+      <div class="panel form">
+        <h2>Kurzbefehl</h2>
+        <label class="check"><input type="checkbox" id="set-useshortcut"> Nach dem Lernen den Kurzbefehl starten</label>
+        <label class="row">
+          <span>Name des Kurzbefehls</span>
+          <input type="text" id="set-shortcutname" autocomplete="off">
+        </label>
+        <p class="muted">Siehe <a href="#" data-goto="setup">Einrichtung</a>. Erst einschalten, wenn der Kurzbefehl existiert.</p>
+      </div>
+      <div class="panel form">
+        <h2>Lernstand</h2>
+        <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
+        <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
+      </div>
+    </section>
+
+    <!-- EINRICHTUNG -->
+    <section id="view-setup" class="view">
+      <div class="panel prose">
+        <h2>So wird daraus eine Sperre</h2>
+        <p>Die Web-App merkt sich, wie lange du frei bist. Damit das iPhone das auch weiß, brauchst du zwei Kurzbefehle und eine Automation. Das dauert etwa 5 Minuten.</p>
+        <p class="note">Wichtig: Öffne diese Seite immer in <b>Safari</b> (nicht als Home-Bildschirm-App), denn nur dort landen deine Decks und die Kurzbefehle auf denselben Daten.</p>
+
+        <h3>1. Kurzbefehl „Anki Fertig“</h3>
+        <ol>
+          <li>Kurzbefehle-App → <b>+</b> → Name: <code>Anki Fertig</code></li>
+          <li>Aktion <b>Datei sichern</b> hinzufügen. Als Eingabe <b>Kurzbefehleingabe</b> wählen.</li>
+          <li>Aufklappen: „Fragen, wo gesichert werden soll“ <b>aus</b>, Unterpfad <code>ankilock.txt</code>, „Überschreiben, falls Datei existiert“ <b>an</b>.</li>
+          <li>Oben über das <b>ⓘ</b>-Symbol (Details) prüfen, dass „Eingabe empfangen“ <b>Text</b> erlaubt.</li>
+          <li>Optional am Ende: Aktion <b>App öffnen</b> mit deiner Ablenkungs-App, damit du direkt zurückspringst.</li>
+        </ol>
+        <p>Dann hier unter <a href="#" data-goto="settings">Einstellungen</a> „Nach dem Lernen den Kurzbefehl starten“ einschalten und einmal eine Karte lernen. Dadurch wird die Datei angelegt.</p>
+
+        <h3>2. Kurzbefehl „Anki Sperre“</h3>
+        <ol>
+          <li>Neuer Kurzbefehl, Name: <code>Anki Sperre</code></li>
+          <li>Aktion <b>Datei abrufen</b>: Ordner <b>Kurzbefehle</b>, Pfad <code>ankilock.txt</code>, „Fehler, wenn nicht gefunden“ <b>aus</b>.</li>
+          <li>Aktion <b>Daten aus Eingabe abrufen</b> (englisch: <i>Get Dates from Input</i>) mit der Datei als Eingabe.</li>
+          <li>Aktion <b>Wenn</b>: <b>Daten</b> · <b>ist vor</b> · <b>Aktuelles Datum</b>.</li>
+          <li>In den Wenn-Zweig: <b>URL öffnen</b> mit <code id="setup-url"></code></li>
+        </ol>
+
+        <h3>3. Automation</h3>
+        <ol>
+          <li>Kurzbefehle → <b>Automation</b> → <b>+</b> → <b>App</b>.</li>
+          <li>Apps wählen (z. B. Instagram, TikTok, YouTube), <b>Ist geöffnet</b>, <b>Sofort ausführen</b>.</li>
+          <li>Als Aktion den Kurzbefehl <b>Anki Sperre</b> ausführen.</li>
+        </ol>
+
+        <h3>Wie es dann läuft</h3>
+        <p>Du öffnest Instagram → die Automation prüft die Datei → ist die Zeit abgelaufen, öffnet sich diese Seite → du lernst deine Karten → „Anki Fertig“ speichert die neue freie Zeit → Instagram geht wieder bis zum nächsten Mal.</p>
+        <p class="muted">Das ist eine „weiche“ Sperre zum Ausprobieren. Eine echte Sperre geht erst mit einer nativen App über die Screen Time API.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/fzstd.js"></script>
+  <script src="vendor/sql-wasm.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
