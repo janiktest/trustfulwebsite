@@ -745,7 +745,7 @@
   }
 
   const SHORTCUT_LINKS = {
-    fertig: 'https://www.icloud.com/shortcuts/b01d24874d3a45e49586b9f7370ebce2',
+    fertig: 'https://www.icloud.com/shortcuts/59263aa443d04316bcb1e35ba8760757',
     sperre: 'https://www.icloud.com/shortcuts/9a50b196a579439a91e7b719b13f9c1a',
   };
 
