@@ -75,10 +75,6 @@
         <p class="muted">Ein Haken bei einem Deck schließt alle Unterdecks ein.</p>
         <div id="deck-tree" class="deck-tree"><p class="muted">Noch nichts importiert.</p></div>
         <p class="selected-count" id="selected-count"></p>
-        <div id="skipped-info" class="skipped-info hidden">
-          <span id="skipped-text"></span>
-          <button class="btn secondary" id="btn-restore-skipped">Alle zurückholen</button>
-        </div>
       </div>
       <div class="panel" id="imports-panel"></div>
     </section>
@@ -102,18 +98,16 @@
             <option value="srs">Spaced Repetition</option>
           </select>
         </label>
-        <label class="row">
-          <span>„Überspringen“-Button</span>
-          <select id="set-skip">
-            <option value="park">Zurückstellen, bis ich sie zurückhole</option>
-            <option value="once">Nur dieses Mal überspringen</option>
-            <option value="off">Ausblenden</option>
-          </select>
-        </label>
         <label class="row srs-only">
           <span>Neue Karten pro Tag</span>
           <input type="number" id="set-newperday" min="0" max="500" inputmode="numeric">
         </label>
+      </div>
+      <div class="panel form">
+        <h2>Überspringen</h2>
+        <label class="check"><input type="checkbox" id="set-skip"> „Überspringen“-Button anzeigen (für Stoff, den du noch nicht hattest)</label>
+        <p class="muted">Übersprungene Karten kommen nicht mehr dran, bis du sie hier zurückholst.</p>
+        <div id="skipped-list" class="skipped-list"></div>
       </div>
       <div class="panel form">
         <h2>Strafe bei falscher Antwort</h2>

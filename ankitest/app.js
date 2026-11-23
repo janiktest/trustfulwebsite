@@ -20,7 +20,7 @@
   const DEFAULTS = {
     interval: 15, cards: 1, mode: 'random', newPerDay: 20,
     penHalve: true, penExtra: false, penRepeat: true,
-    useShortcut: false, shortcutName: 'Anki Fertig', skipMode: 'park',
+    useShortcut: false, shortcutName: 'Anki Fertig', skipEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   const saveSettings = () => LS.set('settings', settings);
@@ -257,7 +257,7 @@
   }
 
   // ---------- Karten-Rendering ----------
-  const stripHtml = (s) => { const t = document.createElement('div'); t.innerHTML = s; return t.textContent || ''; };
+  const stripHtml = (s) => new DOMParser().parseFromString(String(s), 'text/html').body.textContent || '';
   const fieldNonEmpty = (s) => s != null && stripHtml(s.replace(/<img/gi, 'x<img')).trim() !== '';
 
   function renderCloze(text, ordNum, isAnswer) {
@@ -432,7 +432,7 @@
   async function showLearn() {
     clearInterval(freeTimer);
     ['learn-empty', 'learn-free', 'learn-session'].forEach((id) => $(id).classList.add('hidden'));
-    if (session) { $('learn-session').classList.remove('hidden'); $('btn-skip').classList.toggle('hidden', settings.skipMode === 'off'); return; }
+    if (session) { $('learn-session').classList.remove('hidden'); $('btn-skip').classList.toggle('hidden', !settings.skipEnabled); return; }
     if (!selectedCards().length) { $('learn-empty').classList.remove('hidden'); return; }
     const until = unlockUntil();
     if (until > Date.now()) {
@@ -473,7 +473,7 @@
     session.revealed = false;
     updateProgress();
     $('btn-show').classList.remove('hidden');
-    $('btn-skip').classList.toggle('hidden', settings.skipMode === 'off');
+    $('btn-skip').classList.toggle('hidden', !settings.skipEnabled);
     $('grade-random').classList.add('hidden');
     $('grade-srs').classList.add('hidden');
     $('deck-label').textContent = await renderCardInto($('card-host'), card, false);
@@ -484,13 +484,9 @@
     if (!session || !session.card) return;
     const key = session.card.key;
     session.repeat = session.repeat.filter((c) => c.key !== key);
-    if (settings.skipMode === 'park') {
-      const sk = LS.get('skipped', []);
-      if (!sk.includes(key)) { sk.push(key); LS.set('skipped', sk); }
-      toast('Zurückgestellt. Unter „Decks“ kannst du sie zurückholen.');
-    } else {
-      toast('Übersprungen');
-    }
+    const sk = LS.get('skipped', []);
+    if (!sk.includes(key)) { sk.push(key); LS.set('skipped', sk); }
+    toast('Übersprungen. Unter „Einstellungen“ kannst du sie zurückholen.');
     if (!selectedCards().length) { session = null; showLearn(); return; }
     nextCard();
   }
@@ -585,10 +581,41 @@
     const n = selectedCards().length;
     $('selected-count').textContent = n ? `${n} Karten ausgewählt` : 'Keine Karten ausgewählt';
     const skippedHere = selectedCards(true).length - n;
-    const allSkipped = LS.get('skipped', []).length;
-    $('skipped-info').classList.toggle('hidden', !allSkipped);
-    $('skipped-text').textContent = `${allSkipped} Karte${allSkipped === 1 ? '' : 'n'} übersprungen` + (skippedHere && skippedHere !== allSkipped ? ` (${skippedHere} davon in der Auswahl)` : '');
+    if (skippedHere) $('selected-count').textContent += ` (${skippedHere} übersprungen)`;
     renderImports();
+  }
+
+  let skippedThumbs = [];
+  async function renderSkipped() {
+    const box = $('skipped-list');
+    skippedThumbs.forEach((u) => URL.revokeObjectURL(u)); skippedThumbs = [];
+    const cardByKey = new Map(allCards.map((c) => [c.key, c]));
+    const keys = LS.get('skipped', []).filter((k) => cardByKey.has(k));
+    if (!keys.length) { box.innerHTML = '<p class="muted">Keine übersprungenen Karten.</p>'; return; }
+    const deckName = new Map(allDecks.map((d) => [d.key, d.name]));
+    const groups = new Map();
+    for (const k of keys) {
+      const c = cardByKey.get(k);
+      const note = await getOne('notes', c.nid);
+      const preview = note ? note.flds.map((f) => stripHtml(f).replace(/\s+/g, ' ').trim()).find((t) => t && !/^[0-9a-f]{32}-ao-\d+$/.test(t)) : '';
+      const name = deckName.get(c.did) || 'Unbekanntes Deck';
+      if (!groups.has(name)) groups.set(name, []);
+      let thumb = '';
+      if (!preview && note) {
+        const m = note.flds.join(' ').match(/<img[^>]+src=["']?([^"' >]+)/i);
+        if (m) {
+          let n = m[1]; try { n = decodeURIComponent(n); } catch { /* keep */ }
+          const media = await getOne('media', c.importId + '/' + n);
+          if (media) { thumb = URL.createObjectURL(media.blob); skippedThumbs.push(thumb); }
+        }
+      }
+      groups.get(name).push({ key: k, thumb, text: preview ? (preview.length > 90 ? preview.slice(0, 90) + ' …' : preview) : '(Bildkarte)' });
+    }
+    const short = (n) => n.split('::').slice(-2).join(' › ');
+    box.innerHTML = `<div class="skipped-head"><span>${keys.length} Karte${keys.length === 1 ? '' : 'n'} übersprungen</span><button class="btn secondary" data-restore="*">Alle zurückholen</button></div>` +
+      [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0], 'de', { numeric: true })).map(([name, items]) =>
+        `<div class="skipped-deck"><h3>${escapeHtml(short(name))}</h3>` + items.map((it) =>
+          `<div class="skipped-row">${it.thumb ? `<img class="thumb" src="${it.thumb}" alt="">` : ''}<span>${escapeHtml(it.text)}</span><button class="btn secondary" data-restore="${it.key}">Zurückholen</button></div>`).join('') + '</div>').join('');
   }
 
   function renderImports() {
@@ -614,6 +641,7 @@
     LS.set('view', name);
     if (name === 'learn') showLearn();
     if (name === 'decks') renderDecks();
+    if (name === 'settings') renderSkipped();
   }
 
   function bindSettings() {
@@ -630,8 +658,8 @@
     const mode = $('set-mode'); mode.value = settings.mode;
     const syncSrs = () => document.querySelectorAll('.srs-only').forEach((e) => e.classList.toggle('hidden', settings.mode !== 'srs'));
     mode.addEventListener('change', () => { settings.mode = mode.value; saveSettings(); syncSrs(); });
-    const skip = $('set-skip'); skip.value = settings.skipMode;
-    skip.addEventListener('change', () => { settings.skipMode = skip.value; saveSettings(); });
+    const skip = $('set-skip'); skip.checked = settings.skipEnabled;
+    skip.addEventListener('change', () => { settings.skipEnabled = skip.checked; saveSettings(); });
     syncSrs();
     const chk = (id, key) => { const el = $(id); el.checked = settings[key]; el.addEventListener('change', () => { settings[key] = el.checked; saveSettings(); }); };
     chk('pen-halve', 'penHalve'); chk('pen-extra', 'penExtra'); chk('pen-repeat', 'penRepeat'); chk('set-useshortcut', 'useShortcut');
@@ -654,7 +682,13 @@
     });
     $('btn-show').addEventListener('click', reveal);
     $('btn-skip').addEventListener('click', skipCard);
-    $('btn-restore-skipped').addEventListener('click', () => { LS.set('skipped', []); renderDecks(); toast('Alle übersprungenen Karten sind wieder dabei'); });
+    $('skipped-list').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-restore]'); if (!b) return;
+      const key = b.dataset.restore;
+      LS.set('skipped', key === '*' ? [] : LS.get('skipped', []).filter((k) => k !== key));
+      toast(key === '*' ? 'Alle Karten sind wieder dabei' : 'Karte ist wieder dabei');
+      renderSkipped();
+    });
     document.querySelectorAll('[data-grade]').forEach((b) => b.addEventListener('click', () => grade(Number(b.dataset.grade))));
     $('card-host').addEventListener('click', reveal);
     $('btn-learn-anyway').addEventListener('click', () => startSession(true));
