@@ -206,3 +206,9 @@ main { max-width: 680px; margin: 0 auto; padding: 16px; }
 .faq { border-top: 1px solid var(--border); padding: 10px 0; }
 .faq summary { cursor: pointer; font-weight: 600; }
 .step { scroll-margin-top: 110px; }
+
+/* Englische Begriffe */
+.term, .dotted-hint { text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-underline-offset: 3px; cursor: help; }
+.term:focus { outline: none; }
+.term-tip { position: fixed; z-index: 60; background: var(--text); color: var(--bg); font-size: 13px; padding: 5px 10px; border-radius: 8px; pointer-events: none; max-width: calc(100vw - 32px); white-space: nowrap; box-shadow: 0 4px 12px #0003; }
+.term-tip::before { content: "EN "; opacity: .6; font-size: 11px; }
