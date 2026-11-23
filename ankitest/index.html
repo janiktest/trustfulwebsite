@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>Anki Lock</title>
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
   <div id="nav-handle" class="nav-handle" aria-label="Menü anzeigen"></div>
@@ -20,6 +20,78 @@
       <button class="tab" data-view="setup">Einrichtung</button>
     </nav>
   </header>
+
+  <!-- EINFÜHRUNG (erster Besuch) -->
+  <div id="onboarding" class="ob hidden" role="dialog" aria-modal="true" aria-label="Einführung">
+    <div class="ob-card">
+      <div class="ob-top">
+        <div class="ob-dots" id="ob-dots"></div>
+        <button class="ob-skip" id="ob-skip">Überspringen</button>
+      </div>
+
+      <section class="ob-step" data-ob="0">
+        <div class="ob-hero">🧠🔒</div>
+        <h2>Willkommen bei Anki Lock</h2>
+        <p>Lernen statt scrollen: Wenn du Instagram, TikTok &amp; Co. öffnest, kommt zuerst eine Karte aus deinem Anki-Deck. Danach bist du ein paar Minuten frei.</p>
+        <ul class="ob-list">
+          <li><span>📚</span>Deine eigenen Anki-Decks (.apkg). Alles bleibt auf deinem iPhone.</li>
+          <li><span>⏱️</span>Du bestimmst, wie viele Karten und wie lange du danach frei bist.</li>
+          <li><span>⚡</span>Einrichtung in etwa 3 Minuten. Wir gehen sie jetzt zusammen durch.</li>
+        </ul>
+        <p class="note">📌 Nutze diese Seite in <b>Safari</b>, nicht als Home-Bildschirm-App.</p>
+      </section>
+
+      <section class="ob-step" data-ob="1">
+        <div class="ob-hero">📚</div>
+        <h2>Deck hinzufügen</h2>
+        <p>Exportiere in Anki ein Deck als <b>Anki-Deck-Paket (.apkg)</b> und lege die Datei aufs iPhone, z. B. per AirDrop oder iCloud Drive.</p>
+        <label class="btn primary wide file-btn">
+          .apkg-Datei auswählen
+          <input type="file" id="ob-file" accept=".apkg,.colpkg,application/octet-stream,application/zip" hidden>
+        </label>
+        <div id="ob-import-status" class="import-status hidden"></div>
+        <p class="muted">Welche Unterdecks abgefragt werden, kannst du später unter „Decks“ auswählen.</p>
+      </section>
+
+      <section class="ob-step" data-ob="2">
+        <div class="ob-hero">⚙️</div>
+        <h2>Zwei Kurzbefehle installieren</h2>
+        <p>Tippe nacheinander auf beide Buttons. In der Kurzbefehle-App jeweils <b>Kurzbefehl hinzufügen</b> tippen und dann zurück zu Safari wechseln.</p>
+        <a class="btn primary wide" href="#" data-install="fertig" target="_blank" rel="noopener">1. „Anki Fertig“ installieren</a>
+        <a class="btn primary wide ob-gap" href="#" data-install="sperre" target="_blank" rel="noopener">2. „Anki Sperre“ installieren</a>
+        <div class="test-box ob-gap">
+          <b>Kurz testen:</b> Wenn iOS fragt, ob der Kurzbefehl Dateien sichern darf, wähle <b>Immer erlauben</b>.
+          <button class="btn secondary wide js-test-fertig">„Anki Fertig“ testen</button>
+          <label class="check"><input type="checkbox" class="js-useshortcut"> Nach jedem Lernen automatisch starten</label>
+        </div>
+      </section>
+
+      <section class="ob-step" data-ob="3">
+        <div class="ob-hero">📱</div>
+        <h2>Automation anlegen</h2>
+        <p>Das ist der einzige Teil, den du von Hand machen musst:</p>
+        <ol class="howto">
+          <li>App <b>Kurzbefehle</b> → unten <b>Automation</b> → <b>+</b></li>
+          <li><b>App</b> wählen, dann deine Ablenkungs-Apps markieren (z. B. Instagram, TikTok).</li>
+          <li><b>Ist geöffnet</b> anhaken, <b>Sofort ausführen</b> wählen, <b>Weiter</b>.</li>
+          <li><b>Anki Sperre</b> antippen. Fertig!</li>
+        </ol>
+        <p class="muted">Englisch: Automation → + → App → Is Opened → Run Immediately → Next → Anki Sperre</p>
+      </section>
+
+      <section class="ob-step" data-ob="4">
+        <div class="ob-hero">🎉</div>
+        <h2>Geschafft!</h2>
+        <p>Probier es aus: Tippe auf „Los geht's“, wechsle zu Instagram (oder einer anderen gewählten App) und diese Seite sollte sich öffnen.</p>
+        <p class="muted">Klappt etwas nicht? Unter <b>Einrichtung</b> gibt es eine ausführliche Anleitung mit Hilfe-Abschnitt. Die Einführung kannst du jederzeit unter Einstellungen erneut starten.</p>
+      </section>
+
+      <div class="ob-nav">
+        <button class="btn ghost" id="ob-back">Zurück</button>
+        <button class="btn primary" id="ob-next">Weiter</button>
+      </div>
+    </div>
+  </div>
 
   <main>
     <!-- LERNEN -->
@@ -148,7 +220,8 @@
         <h2>Lernstand</h2>
         <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
-        <p class="muted version">Version 9 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <button class="btn secondary" id="btn-show-intro">Einführung erneut zeigen</button>
+        <p class="muted version">Version 10 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
       </div>
     </section>
 
@@ -172,7 +245,7 @@
       <details class="panel step" data-step="1">
         <summary><span class="step-num">1</span><span class="step-title">Kurzbefehl „Anki Fertig“<small>merkt sich, bis wann du frei bist</small></span><span class="step-check">✓</span></summary>
         <div class="install-box">
-          <a class="btn primary wide" href="https://www.icloud.com/shortcuts/7a70a601e71543b9a5159ec3ad2b9350" target="_blank" rel="noopener">„Anki Fertig“ installieren</a>
+          <a class="btn primary wide" href="#" data-install="fertig" target="_blank" rel="noopener">„Anki Fertig“ installieren</a>
           <p class="muted">Öffnet die Kurzbefehle-App. Dort auf <b>Kurzbefehl hinzufügen</b> <span class="en-inline">(Add Shortcut)</span> tippen, fertig.</p>
         </div>
         <details class="diy">
@@ -199,7 +272,7 @@
         </details>
         <div class="test-box">
           <b>Testen:</b> Tippe auf den Button. Die Kurzbefehle-App geht kurz auf. Wenn iOS fragt, ob der Kurzbefehl Dateien sichern darf, wähle <b>Immer erlauben</b>.
-          <button class="btn primary wide" id="setup-test-1">„Anki Fertig“ jetzt testen</button>
+          <button class="btn primary wide js-test-fertig">„Anki Fertig“ jetzt testen</button>
           <label class="check"><input type="checkbox" class="js-useshortcut"> Ab jetzt nach jedem Lernen automatisch starten</label>
         </div>
         <button class="btn secondary wide step-done" data-done="1">Schritt 1 erledigt</button>
@@ -208,7 +281,7 @@
       <details class="panel step" data-step="2">
         <summary><span class="step-num">2</span><span class="step-title">Kurzbefehl „Anki Sperre“<small>prüft, ob du gerade frei bist</small></span><span class="step-check">✓</span></summary>
         <div class="install-box">
-          <a class="btn primary wide" href="https://www.icloud.com/shortcuts/dc41176c6c1c47d4bdf22dd015cc9be7" target="_blank" rel="noopener">„Anki Sperre“ installieren</a>
+          <a class="btn primary wide" href="#" data-install="sperre" target="_blank" rel="noopener">„Anki Sperre“ installieren</a>
           <p class="muted">Öffnet die Kurzbefehle-App. Dort auf <b>Kurzbefehl hinzufügen</b> <span class="en-inline">(Add Shortcut)</span> tippen, fertig.</p>
         </div>
         <details class="diy">
@@ -279,6 +352,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

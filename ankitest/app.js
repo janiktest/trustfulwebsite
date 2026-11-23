@@ -744,7 +744,78 @@
     $('nav-handle').addEventListener('click', () => setNav(true));
   }
 
+  const SHORTCUT_LINKS = {
+    fertig: 'https://www.icloud.com/shortcuts/59263aa443d04316bcb1e35ba8760757',
+    sperre: 'https://www.icloud.com/shortcuts/9a50b196a579439a91e7b719b13f9c1a',
+  };
+
+  async function doImport(file, st) {
+    st.classList.remove('hidden', 'error');
+    try {
+      const r = await importApkg(file, (m) => { st.textContent = m; });
+      st.textContent = `✓ ${r.cards} Karten und ${r.media} Bilder importiert.`;
+      await loadData(); renderDecks();
+      return true;
+    } catch (err) {
+      console.error(err);
+      st.classList.add('error');
+      st.textContent = 'Import fehlgeschlagen: ' + (err && err.message ? err.message : err);
+      return false;
+    }
+  }
+
+  // ---------- Einführung ----------
+  let obStep = 0;
+  const OB_STEPS = 5;
+  function showOnboarding(step) {
+    obStep = step || 0;
+    $('onboarding').classList.remove('hidden');
+    document.body.classList.add('ob-open');
+    renderOnboarding();
+  }
+  function closeOnboarding(goLearn) {
+    $('onboarding').classList.add('hidden');
+    document.body.classList.remove('ob-open');
+    LS.set('onboarded', true);
+    if (goLearn) { LS.set('unlockUntil', 0); showView(allCards.length ? 'learn' : 'decks'); }
+  }
+  function renderOnboarding() {
+    document.querySelectorAll('.ob-step').forEach((sec) => sec.classList.toggle('active', Number(sec.dataset.ob) === obStep));
+    $('ob-dots').innerHTML = Array.from({ length: OB_STEPS }, (_, i) => `<span class="${i === obStep ? 'on' : i < obStep ? 'done' : ''}"></span>`).join('');
+    $('ob-back').style.visibility = obStep === 0 ? 'hidden' : 'visible';
+    $('ob-skip').style.visibility = obStep === OB_STEPS - 1 ? 'hidden' : 'visible';
+    const next = $('ob-next');
+    next.textContent = obStep === 0 ? 'Los geht\'s' : obStep === OB_STEPS - 1 ? 'Los geht\'s' : 'Weiter';
+    if (obStep === 1) {
+      const st = $('ob-import-status');
+      if (allCards.length && st.classList.contains('hidden')) { st.classList.remove('hidden', 'error'); st.textContent = `✓ Du hast schon ${allCards.length} Karten importiert. Du kannst weitere hinzufügen oder weitergehen.`; }
+      next.textContent = allCards.length ? 'Weiter' : 'Später';
+    }
+    document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = settings.useShortcut; });
+    $('onboarding').querySelector('.ob-card').scrollTop = 0;
+  }
+  function initOnboarding() {
+    $('ob-next').addEventListener('click', () => {
+      if (obStep >= OB_STEPS - 1) { closeOnboarding(true); return; }
+      obStep++; renderOnboarding();
+    });
+    $('ob-back').addEventListener('click', () => { if (obStep > 0) { obStep--; renderOnboarding(); } });
+    $('ob-skip').addEventListener('click', () => closeOnboarding(false));
+    $('ob-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      if (await doImport(file, $('ob-import-status'))) renderOnboarding();
+      e.target.value = '';
+    });
+    // Wer „Anki Fertig“ installiert, will es nach dem Lernen auch automatisch starten
+    document.querySelectorAll('#onboarding [data-install="fertig"]').forEach((a) => a.addEventListener('click', () => {
+      settings.useShortcut = true; saveSettings(); $('set-useshortcut').checked = true;
+      document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = true; });
+    }));
+    $('btn-show-intro').addEventListener('click', () => showOnboarding(0));
+  }
+
   function initSetup() {
+    document.querySelectorAll('[data-install]').forEach((a) => { a.href = SHORTCUT_LINKS[a.dataset.install]; });
     const url = location.origin + location.pathname;
     document.querySelectorAll('.js-setup-url-short').forEach((e) => { e.textContent = url.replace(/^https?:\/\//, ''); });
     document.querySelectorAll('.js-interval').forEach((e) => { e.textContent = settings.interval; });
@@ -755,11 +826,11 @@
       catch { toast(b.dataset.copy); }
     }));
     document.querySelectorAll('.js-lock-now').forEach((b) => b.addEventListener('click', () => { LS.set('unlockUntil', 0); toast('Sperre ist aktiv'); }));
-    $('setup-test-1').addEventListener('click', () => {
+    document.querySelectorAll('.js-test-fertig').forEach((b) => b.addEventListener('click', () => {
       const until = Math.max(unlockUntil(), Date.now());
       window.location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent(settings.shortcutName) +
         '&input=text&text=' + encodeURIComponent(shortcutDate(until));
-    });
+    }));
     document.querySelectorAll('.js-useshortcut').forEach((cb) => {
       cb.checked = settings.useShortcut;
       cb.addEventListener('change', () => { settings.useShortcut = cb.checked; saveSettings(); $('set-useshortcut').checked = cb.checked; });
@@ -828,17 +899,7 @@
 
     $('file-input').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
-      const st = $('import-status');
-      st.classList.remove('hidden', 'error');
-      try {
-        const r = await importApkg(file, (m) => { st.textContent = m; });
-        st.textContent = `Fertig: ${r.cards} Karten und ${r.media} Bilder importiert.`;
-        await loadData(); renderDecks();
-      } catch (err) {
-        console.error(err);
-        st.classList.add('error');
-        st.textContent = 'Import fehlgeschlagen: ' + (err && err.message ? err.message : err);
-      }
+      await doImport(file, $('import-status'));
       e.target.value = '';
     });
 
@@ -847,6 +908,8 @@
     await loadData();
     const startView = allCards.length ? 'learn' : 'decks';
     showView(startView);
+    initOnboarding();
+    if (!LS.get('onboarded', false)) showOnboarding(0);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && $('view-learn').classList.contains('active') && !session) showLearn();
     });
