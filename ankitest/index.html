@@ -54,6 +54,7 @@
             <button class="btn good" data-grade="3">Gut<small id="lbl-3"></small></button>
             <button class="btn easy" data-grade="4">Einfach<small id="lbl-4"></small></button>
           </div>
+          <button id="btn-skip" class="btn ghost wide skip">Überspringen (Stoff noch nicht gehabt)</button>
         </div>
       </div>
     </section>
@@ -74,6 +75,10 @@
         <p class="muted">Ein Haken bei einem Deck schließt alle Unterdecks ein.</p>
         <div id="deck-tree" class="deck-tree"><p class="muted">Noch nichts importiert.</p></div>
         <p class="selected-count" id="selected-count"></p>
+        <div id="skipped-info" class="skipped-info hidden">
+          <span id="skipped-text"></span>
+          <button class="btn secondary" id="btn-restore-skipped">Alle zurückholen</button>
+        </div>
       </div>
       <div class="panel" id="imports-panel"></div>
     </section>
@@ -95,6 +100,14 @@
           <select id="set-mode">
             <option value="random">Zufällig</option>
             <option value="srs">Spaced Repetition</option>
+          </select>
+        </label>
+        <label class="row">
+          <span>„Überspringen“-Button</span>
+          <select id="set-skip">
+            <option value="park">Zurückstellen, bis ich sie zurückhole</option>
+            <option value="once">Nur dieses Mal überspringen</option>
+            <option value="off">Ausblenden</option>
           </select>
         </label>
         <label class="row srs-only">

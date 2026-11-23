@@ -20,7 +20,7 @@
   const DEFAULTS = {
     interval: 15, cards: 1, mode: 'random', newPerDay: 20,
     penHalve: true, penExtra: false, penRepeat: true,
-    useShortcut: false, shortcutName: 'Anki Fertig',
+    useShortcut: false, shortcutName: 'Anki Fertig', skipMode: 'park',
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   const saveSettings = () => LS.set('settings', settings);
@@ -243,7 +243,8 @@
   async function loadData() {
     [allDecks, allCards, allImports] = await Promise.all([getAll('decks'), getAll('cards'), getAll('imports')]);
   }
-  function selectedCards() {
+  const skippedSet = () => new Set(LS.get('skipped', []));
+  function selectedCards(includeSkipped) {
     const sel = LS.get('selectedDecks', []);
     const deckByKey = new Map(allDecks.map((d) => [d.key, d]));
     const selNames = sel.map((k) => deckByKey.get(k)).filter(Boolean);
@@ -251,7 +252,8 @@
     for (const d of allDecks) {
       if (selNames.some((s) => s.importId === d.importId && (d.name === s.name || d.name.startsWith(s.name + '::')))) allowed.add(d.key);
     }
-    return allCards.filter((c) => allowed.has(c.did));
+    const skipped = includeSkipped ? new Set() : skippedSet();
+    return allCards.filter((c) => allowed.has(c.did) && !skipped.has(c.key));
   }
 
   // ---------- Karten-Rendering ----------
@@ -430,7 +432,7 @@
   async function showLearn() {
     clearInterval(freeTimer);
     ['learn-empty', 'learn-free', 'learn-session'].forEach((id) => $(id).classList.add('hidden'));
-    if (session) { $('learn-session').classList.remove('hidden'); return; }
+    if (session) { $('learn-session').classList.remove('hidden'); $('btn-skip').classList.toggle('hidden', settings.skipMode === 'off'); return; }
     if (!selectedCards().length) { $('learn-empty').classList.remove('hidden'); return; }
     const until = unlockUntil();
     if (until > Date.now()) {
@@ -471,10 +473,26 @@
     session.revealed = false;
     updateProgress();
     $('btn-show').classList.remove('hidden');
+    $('btn-skip').classList.toggle('hidden', settings.skipMode === 'off');
     $('grade-random').classList.add('hidden');
     $('grade-srs').classList.add('hidden');
     $('deck-label').textContent = await renderCardInto($('card-host'), card, false);
     window.scrollTo({ top: 0 });
+  }
+
+  function skipCard() {
+    if (!session || !session.card) return;
+    const key = session.card.key;
+    session.repeat = session.repeat.filter((c) => c.key !== key);
+    if (settings.skipMode === 'park') {
+      const sk = LS.get('skipped', []);
+      if (!sk.includes(key)) { sk.push(key); LS.set('skipped', sk); }
+      toast('Zurückgestellt. Unter „Decks“ kannst du sie zurückholen.');
+    } else {
+      toast('Übersprungen');
+    }
+    if (!selectedCards().length) { session = null; showLearn(); return; }
+    nextCard();
   }
 
   function updateProgress() {
@@ -566,6 +584,10 @@
     });
     const n = selectedCards().length;
     $('selected-count').textContent = n ? `${n} Karten ausgewählt` : 'Keine Karten ausgewählt';
+    const skippedHere = selectedCards(true).length - n;
+    const allSkipped = LS.get('skipped', []).length;
+    $('skipped-info').classList.toggle('hidden', !allSkipped);
+    $('skipped-text').textContent = `${allSkipped} Karte${allSkipped === 1 ? '' : 'n'} übersprungen` + (skippedHere && skippedHere !== allSkipped ? ` (${skippedHere} davon in der Auswahl)` : '');
     renderImports();
   }
 
@@ -608,6 +630,8 @@
     const mode = $('set-mode'); mode.value = settings.mode;
     const syncSrs = () => document.querySelectorAll('.srs-only').forEach((e) => e.classList.toggle('hidden', settings.mode !== 'srs'));
     mode.addEventListener('change', () => { settings.mode = mode.value; saveSettings(); syncSrs(); });
+    const skip = $('set-skip'); skip.value = settings.skipMode;
+    skip.addEventListener('change', () => { settings.skipMode = skip.value; saveSettings(); });
     syncSrs();
     const chk = (id, key) => { const el = $(id); el.checked = settings[key]; el.addEventListener('change', () => { settings[key] = el.checked; saveSettings(); }); };
     chk('pen-halve', 'penHalve'); chk('pen-extra', 'penExtra'); chk('pen-repeat', 'penRepeat'); chk('set-useshortcut', 'useShortcut');
@@ -629,6 +653,8 @@
       if (g) { e.preventDefault(); showView(g.dataset.goto); }
     });
     $('btn-show').addEventListener('click', reveal);
+    $('btn-skip').addEventListener('click', skipCard);
+    $('btn-restore-skipped').addEventListener('click', () => { LS.set('skipped', []); renderDecks(); toast('Alle übersprungenen Karten sind wieder dabei'); });
     document.querySelectorAll('[data-grade]').forEach((b) => b.addEventListener('click', () => grade(Number(b.dataset.grade))));
     $('card-host').addEventListener('click', reveal);
     $('btn-learn-anyway').addEventListener('click', () => startSession(true));
