@@ -267,3 +267,4 @@ body.ob-open { overflow: hidden; }
 .ob-gap { margin-top: 10px; }
 .ob-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
 .ob-nav .btn { flex: 1; }
+.muted.small { font-size: 13px; }

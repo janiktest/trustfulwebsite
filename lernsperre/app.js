@@ -1,4 +1,4 @@
-/* Anki Lock – Web-Prototyp
+/* LernSperre – Web-Prototyp (früher „Anki Lock“)
  * Importiert .apkg-Dateien, speichert alles lokal (IndexedDB) und fragt Karten ab.
  * Nach erfolgreicher Abfrage ist man für X Minuten "frei". Optional wird ein
  * iOS-Kurzbefehl mit dem Ende der freien Zeit gestartet.
@@ -21,7 +21,7 @@
     interval: 5, cards: 1, mode: 'srs', newPerDay: 20,
     cardScale: 100, imgMax: 50, hideTitle: false, autoHideNav: false,
     penHalve: true, penExtra: false, penRepeat: true,
-    useShortcut: false, shortcutName: 'Anki Fertig', skipEnabled: true, skipOnceEnabled: true,
+    useShortcut: false, shortcutName: 'LernSperre Fertig', skipEnabled: true, skipOnceEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   // Einmalige Umstellung auf die neuen Standardwerte (Spaced Repetition, 5 Minuten)
@@ -29,6 +29,12 @@
     Object.assign(settings, { mode: 'srs', interval: 5, newPerDay: 20 });
     LS.set('settings', settings);
     LS.set('settingsRev', 2);
+  }
+  // Umbenennung in LernSperre: alten Standard-Kurzbefehlnamen übernehmen
+  if (LS.get('settingsRev', 2) < 3) {
+    if (settings.shortcutName === 'Anki Fertig') settings.shortcutName = 'LernSperre Fertig';
+    LS.set('settings', settings);
+    LS.set('settingsRev', 3);
   }
   const saveSettings = () => LS.set('settings', settings);
 
@@ -745,8 +751,9 @@
   }
 
   const SHORTCUT_LINKS = {
-    fertig: 'https://www.icloud.com/shortcuts/59263aa443d04316bcb1e35ba8760757',
-    sperre: 'https://www.icloud.com/shortcuts/9a50b196a579439a91e7b719b13f9c1a',
+    // Neue iCloud-Links für die umbenannten Kurzbefehle hier eintragen (null = Selbstbau-Anleitung zeigen)
+    fertig: null,
+    sperre: null,
   };
 
   async function doImport(file, st) {
@@ -808,7 +815,7 @@
       if (await doImport(file, $('ob-import-status'))) renderOnboarding();
       e.target.value = '';
     });
-    // Wer „Anki Fertig“ installiert, will es nach dem Lernen auch automatisch starten
+    // Wer „LernSperre Fertig“ installiert, will es nach dem Lernen auch automatisch starten
     document.querySelectorAll('#onboarding [data-install="fertig"]').forEach((a) => a.addEventListener('click', () => {
       settings.useShortcut = true; saveSettings(); $('set-useshortcut').checked = true;
       document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = true; });
@@ -817,7 +824,17 @@
   }
 
   function initSetup() {
-    document.querySelectorAll('[data-install]').forEach((a) => { a.href = SHORTCUT_LINKS[a.dataset.install]; });
+    const haveLinks = SHORTCUT_LINKS.fertig && SHORTCUT_LINKS.sperre;
+    document.querySelectorAll('[data-install]').forEach((a) => {
+      if (SHORTCUT_LINKS[a.dataset.install]) a.href = SHORTCUT_LINKS[a.dataset.install];
+      else a.classList.add('hidden');
+    });
+    document.querySelectorAll('.install-box').forEach((b) => b.classList.toggle('hidden', !haveLinks));
+    document.querySelectorAll('details.diy').forEach((d) => { if (!haveLinks) d.open = true; });
+    document.querySelectorAll('.ob-no-links').forEach((n) => n.classList.toggle('hidden', !!haveLinks));
+    document.querySelectorAll('[data-goto-close]').forEach((a) => a.addEventListener('click', (e) => {
+      e.preventDefault(); closeOnboarding(false); showView(a.dataset.gotoClose);
+    }));
     const url = location.origin + location.pathname;
     document.querySelectorAll('.js-setup-url-short').forEach((e) => { e.textContent = url.replace(/^https?:\/\//, ''); });
     document.querySelectorAll('.js-interval').forEach((e) => { e.textContent = settings.interval; });
