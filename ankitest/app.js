@@ -20,7 +20,7 @@
   const DEFAULTS = {
     interval: 15, cards: 1, mode: 'random', newPerDay: 20,
     penHalve: true, penExtra: false, penRepeat: true,
-    useShortcut: false, shortcutName: 'Anki Fertig', skipEnabled: true,
+    useShortcut: false, shortcutName: 'Anki Fertig', skipEnabled: true, skipOnceEnabled: true,
   };
   const settings = Object.assign({}, DEFAULTS, LS.get('settings', {}));
   const saveSettings = () => LS.set('settings', settings);
@@ -303,7 +303,7 @@
 
   const CARD_CSS_OVERRIDES = `
     :host { display:block; }
-    .card { padding: 20px 16px; min-height: 240px; overflow-wrap: anywhere; }
+    .card { padding: 20px 16px; min-height: 240px; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
     img { max-width: 100% !important; height: auto; }
     .cloze { font-weight: bold; color: #1a5fd6; }
     hr#answer { border: 0; border-top: 1px solid #ddd; margin: 16px 0; }
@@ -432,7 +432,7 @@
   async function showLearn() {
     clearInterval(freeTimer);
     ['learn-empty', 'learn-free', 'learn-session'].forEach((id) => $(id).classList.add('hidden'));
-    if (session) { $('learn-session').classList.remove('hidden'); $('btn-skip').classList.toggle('hidden', !settings.skipEnabled); return; }
+    if (session) { $('learn-session').classList.remove('hidden'); syncSkipButtons(); return; }
     if (!selectedCards().length) { $('learn-empty').classList.remove('hidden'); return; }
     const until = unlockUntil();
     if (until > Date.now()) {
@@ -473,20 +473,30 @@
     session.revealed = false;
     updateProgress();
     $('btn-show').classList.remove('hidden');
-    $('btn-skip').classList.toggle('hidden', !settings.skipEnabled);
+    syncSkipButtons();
     $('grade-random').classList.add('hidden');
     $('grade-srs').classList.add('hidden');
     $('deck-label').textContent = await renderCardInto($('card-host'), card, false);
     window.scrollTo({ top: 0 });
   }
 
-  function skipCard() {
+  function syncSkipButtons() {
+    $('btn-skip').classList.toggle('hidden', !settings.skipEnabled);
+    $('btn-skip-once').classList.toggle('hidden', !settings.skipOnceEnabled);
+    $('skip-bar').classList.toggle('hidden', !settings.skipEnabled && !settings.skipOnceEnabled);
+  }
+
+  function skipCard(permanent) {
     if (!session || !session.card) return;
     const key = session.card.key;
     session.repeat = session.repeat.filter((c) => c.key !== key);
-    const sk = LS.get('skipped', []);
-    if (!sk.includes(key)) { sk.push(key); LS.set('skipped', sk); }
-    toast('Übersprungen. Unter „Einstellungen“ kannst du sie zurückholen.');
+    if (permanent) {
+      const sk = LS.get('skipped', []);
+      if (!sk.includes(key)) { sk.push(key); LS.set('skipped', sk); }
+      toast('Zurückgestellt. Unter „Einstellungen“ kannst du sie zurückholen.');
+    } else {
+      toast('Übersprungen');
+    }
     if (!selectedCards().length) { session = null; showLearn(); return; }
     nextCard();
   }
@@ -660,6 +670,8 @@
     mode.addEventListener('change', () => { settings.mode = mode.value; saveSettings(); syncSrs(); });
     const skip = $('set-skip'); skip.checked = settings.skipEnabled;
     skip.addEventListener('change', () => { settings.skipEnabled = skip.checked; saveSettings(); });
+    const skipOnce = $('set-skip-once'); skipOnce.checked = settings.skipOnceEnabled;
+    skipOnce.addEventListener('change', () => { settings.skipOnceEnabled = skipOnce.checked; saveSettings(); });
     syncSrs();
     const chk = (id, key) => { const el = $(id); el.checked = settings[key]; el.addEventListener('change', () => { settings[key] = el.checked; saveSettings(); }); };
     chk('pen-halve', 'penHalve'); chk('pen-extra', 'penExtra'); chk('pen-repeat', 'penRepeat'); chk('set-useshortcut', 'useShortcut');
@@ -681,7 +693,8 @@
       if (g) { e.preventDefault(); showView(g.dataset.goto); }
     });
     $('btn-show').addEventListener('click', reveal);
-    $('btn-skip').addEventListener('click', skipCard);
+    $('btn-skip').addEventListener('click', () => skipCard(true));
+    $('btn-skip-once').addEventListener('click', () => skipCard(false));
     $('skipped-list').addEventListener('click', (e) => {
       const b = e.target.closest('[data-restore]'); if (!b) return;
       const key = b.dataset.restore;
