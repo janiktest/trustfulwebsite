@@ -784,6 +784,12 @@
     session = null;
     if ($('view-learn').classList.contains('active')) showLearn();
   }
+  // Hinweis „Nach dem Lernen Kurzbefehl starten“ einschalten
+  function syncShortcutRemind() {
+    document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = settings.useShortcut; });
+    $('set-useshortcut').checked = settings.useShortcut;
+    document.querySelectorAll('.sc-remind').forEach((b) => b.classList.toggle('is-on', !!settings.useShortcut));
+  }
   function applyAppMode() {
     document.body.classList.toggle('mode-learn', learnOnly());
     document.querySelectorAll('[data-appmode]').forEach((b) => b.classList.toggle('selected', b.dataset.appmode === settings.appMode));
@@ -888,7 +894,7 @@
     // Wer „LernSperre UNLOCK“ installiert, will es nach dem Lernen auch automatisch starten
     document.querySelectorAll('#onboarding [data-install="fertig"]').forEach((a) => a.addEventListener('click', () => {
       settings.useShortcut = true; saveSettings(); $('set-useshortcut').checked = true;
-      document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = true; });
+      syncShortcutRemind();
     }));
     $('btn-show-intro').addEventListener('click', () => showOnboarding(0));
   }
@@ -950,6 +956,13 @@
   async function init() {
     applyDisplay();
     applyAppMode();
+    syncShortcutRemind();
+    document.addEventListener('change', (e) => { if (e.target.matches('.js-useshortcut, #set-useshortcut')) syncShortcutRemind(); });
+    document.querySelectorAll('.js-enable-shortcut').forEach((b) => b.addEventListener('click', () => {
+      settings.useShortcut = true; saveSettings(); syncShortcutRemind();
+      if (b.classList.contains('js-enable-and-run')) runShortcut();
+      else toast('Eingeschaltet');
+    }));
     initNavGestures();
     initSetup();
     document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => showView(t.dataset.view)));

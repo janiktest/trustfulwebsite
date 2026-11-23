@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>LernSperre</title>
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
   <div id="nav-handle" class="nav-handle" aria-label="Menü anzeigen"></div>
@@ -91,6 +91,11 @@
       <section class="ob-step" data-ob="4">
         <div class="ob-hero">🎉</div>
         <h2>Geschafft!</h2>
+        <div class="sc-remind lock-only">
+          <div class="sc-remind-off"><b>⚠️ Wichtig: Noch ein Schalter</b><p>Damit die Sperre nach dem Lernen aufgeht, muss die Webseite danach „LernSperre UNLOCK“ starten. Ohne diesen Schalter leitet dich die Automation immer wieder hierher um.</p>
+          <button type="button" class="btn primary wide js-enable-shortcut">„Nach dem Lernen Kurzbefehl starten“ einschalten</button></div>
+          <div class="sc-remind-on">✓ Nach dem Lernen wird „LernSperre UNLOCK“ automatisch gestartet.</div>
+        </div>
         <p class="lock-only">Probier es aus: Tippe auf „Los geht's“, wechsle zu Instagram (oder einer anderen gewählten App) und diese Seite sollte sich öffnen.</p>
         <p class="learn-only">Tippe auf „Los geht's“ und lerne deine Karten. Mit Spaced Repetition kommen jeden Tag die fälligen Karten dran, bis für heute alles erledigt ist.</p>
         <p class="muted learn-only">Die Einführung kannst du jederzeit unter Einstellungen erneut starten. Dort kannst du auch auf die App-Sperre umstellen.</p>
@@ -117,6 +122,10 @@
         <h2>Frei bis <span id="free-until"></span></h2>
         <p class="muted">Noch <span id="free-left"></span>. Du kannst zurück zu deiner App.</p>
         <button id="btn-run-shortcut" class="btn secondary hidden">Kurzbefehl erneut senden</button>
+        <div class="sc-remind lock-only only-off">
+          <div class="sc-remind-off"><b>⚠️ Der Kurzbefehl wurde nicht gestartet</b><p>„Nach dem Lernen Kurzbefehl starten“ ist aus. Deine Apps wissen deshalb nicht, dass du frei bist.</p>
+          <button type="button" class="btn primary wide js-enable-shortcut js-enable-and-run">Einschalten und jetzt senden</button></div>
+        </div>
         <button id="btn-learn-anyway" class="btn ghost">Trotzdem eine Karte lernen</button>
       </div>
 
@@ -251,7 +260,7 @@
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
         <button class="btn secondary" id="btn-show-intro">Einführung erneut zeigen</button>
         <p class="muted small">LernSperre funktioniert mit Anki-Decks (.apkg), ist aber ein unabhängiges Projekt und nicht mit Anki oder Ankitects verbunden.</p>
-        <p class="muted version">Version 14 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 15 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
         <p class="muted"><a href="../impressum/">Impressum</a> · <a href="../datenschutz/">Datenschutzerklärung</a></p>
       </div>
     </section>
@@ -356,6 +365,11 @@
 
       <details class="panel step" data-step="4">
         <summary><span class="step-num">4</span><span class="step-title">Alles zusammen testen<small>dauert 1 Minute</small></span><span class="step-check">✓</span></summary>
+        <div class="sc-remind lock-only">
+          <div class="sc-remind-off"><b>⚠️ Wichtig: Noch ein Schalter</b><p>Damit die Sperre nach dem Lernen aufgeht, muss die Webseite danach „LernSperre UNLOCK“ starten. Ohne diesen Schalter leitet dich die Automation immer wieder hierher um.</p>
+          <button type="button" class="btn primary wide js-enable-shortcut">„Nach dem Lernen Kurzbefehl starten“ einschalten</button></div>
+          <div class="sc-remind-on">✓ Nach dem Lernen wird „LernSperre UNLOCK“ automatisch gestartet.</div>
+        </div>
         <ol class="howto">
           <li>Tippe hier auf <b>Sperre aktivieren</b>. <button class="btn secondary js-lock-now inline">Sperre aktivieren</button></li>
           <li>Öffne Instagram (oder eine andere App aus Schritt 3). Diese Seite sollte automatisch aufgehen.</li>
@@ -383,6 +397,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=14"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
