@@ -279,3 +279,10 @@ body:not(.mode-learn) .learn-only, body.mode-learn .lock-only { display: none !i
 .mode-opt small { color: var(--muted); font-size: 13px; line-height: 1.35; }
 .mode-opt.selected { border-color: var(--accent); background: var(--surface); }
 @media (max-width: 340px) { .mode-choice { grid-template-columns: 1fr; } }
+
+/* Erinnerung: Kurzbefehl nach dem Lernen einschalten */
+.sc-remind { margin: 12px 0; }
+.sc-remind-off { background: color-mix(in srgb, #e0a100 14%, var(--surface)); border: 1px solid color-mix(in srgb, #e0a100 55%, var(--border)); border-radius: 12px; padding: 12px; text-align: left; }
+.sc-remind-off p { margin: 6px 0 10px; font-size: 15px; }
+.sc-remind-on { background: color-mix(in srgb, #2e9d5a 12%, var(--surface)); border-radius: 12px; padding: 10px 12px; font-size: 15px; text-align: left; }
+.sc-remind.is-on .sc-remind-off, .sc-remind:not(.is-on) .sc-remind-on, .sc-remind.only-off.is-on { display: none; }
