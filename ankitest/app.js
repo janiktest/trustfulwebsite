@@ -460,13 +460,25 @@
 
   async function nextCard() {
     let card = null;
-    if (session.repeat.length && session.done >= session.required - session.repeat.length) card = session.repeat.shift();
+    const last = session.card ? session.card.key : null;
+    if (session.repeat.length && session.done >= session.required - session.repeat.length) {
+      if (session.repeat[0].key === last) {
+        // Nie dieselbe Karte direkt nochmal: erst eine andere Karte dazwischen
+        card = await pickCard(session.seen);
+        if (card) session.required++;
+        else card = session.repeat.shift();
+      } else {
+        card = session.repeat.shift();
+      }
+    }
     if (!card) card = await pickCard(session.seen);
-    if (!card && session.repeat.length) card = session.repeat.shift();
+    if (!card && session.repeat.length && session.repeat[0].key !== last) card = session.repeat.shift();
     if (!card) { // alle Karten in dieser Runde gesehen
       session.seen.clear();
-      card = await pickCard(session.seen);
+      card = await pickCard(new Set(last ? [last] : []));
+      if (card) session.seen.add(card.key);
     }
+    if (!card && session.repeat.length) card = session.repeat.shift();
     if (!card) { finishSession(); return; }
     session.card = card;
     session.seen.add(card.key);
