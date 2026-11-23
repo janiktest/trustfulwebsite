@@ -794,7 +794,9 @@
     document.querySelectorAll('.js-useshortcut').forEach((cb) => { cb.checked = settings.useShortcut; });
     $('onboarding').querySelector('.ob-card').scrollTop = 0;
   }
+  const isAppleMobile = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   function initOnboarding() {
+    document.querySelectorAll('.ob-not-ios').forEach((e) => e.classList.toggle('hidden', isAppleMobile()));
     $('ob-next').addEventListener('click', () => {
       if (obStep >= OB_STEPS - 1) { closeOnboarding(true); return; }
       obStep++; renderOnboarding();

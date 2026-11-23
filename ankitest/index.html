@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
   <title>Anki Lock</title>
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
   <div id="nav-handle" class="nav-handle" aria-label="Menü anzeigen"></div>
@@ -36,8 +36,10 @@
         <ul class="ob-list">
           <li><span>📚</span>Deine eigenen Anki-Decks (.apkg). Alles bleibt auf deinem iPhone.</li>
           <li><span>⏱️</span>Du bestimmst, wie viele Karten und wie lange du danach frei bist.</li>
+          <li><span>📱</span><div>Gemacht für <b>iPhone und iPad</b>, denn die Sperre läuft über die Kurzbefehle-App von Apple.</div></li>
           <li><span>⚡</span>Einrichtung in etwa 3 Minuten. Wir gehen sie jetzt zusammen durch.</li>
         </ul>
+        <p class="note ob-not-ios hidden">⚠️ Du bist gerade nicht auf einem iPhone oder iPad. Lernen funktioniert hier auch, die Sperre aber nur auf iPhone und iPad.</p>
         <p class="note">📌 Nutze diese Seite in <b>Safari</b>, nicht als Home-Bildschirm-App.</p>
       </section>
 
@@ -221,7 +223,7 @@
         <button class="btn secondary" id="btn-reset-unlock">Sperre sofort aktivieren</button>
         <button class="btn danger" id="btn-reset-srs">Lernfortschritt zurücksetzen</button>
         <button class="btn secondary" id="btn-show-intro">Einführung erneut zeigen</button>
-        <p class="muted version">Version 10 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
+        <p class="muted version">Version 11 · Siehst du etwas nicht? Seite neu laden (Safari: Adressleiste → ↻).</p>
       </div>
     </section>
 
@@ -352,6 +354,6 @@
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/fzstd.js"></script>
   <script src="vendor/sql-wasm.js"></script>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
