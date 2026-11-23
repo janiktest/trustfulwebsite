@@ -752,8 +752,8 @@
 
   const SHORTCUT_LINKS = {
     // Neue iCloud-Links für die umbenannten Kurzbefehle hier eintragen (null = Selbstbau-Anleitung zeigen)
-    fertig: null,
-    sperre: null,
+    fertig: 'https://www.icloud.com/shortcuts/0a2285c888ce40c49a169575b157a958',
+    sperre: 'https://www.icloud.com/shortcuts/3b976990f0be43fe8fd3288500d8bf36',
   };
 
   async function doImport(file, st) {
